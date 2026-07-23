@@ -1,0 +1,133 @@
+<!-- FAQ Accordion — Perguntas Frequentes -->
+<!-- Copiar e adaptar perguntas e respostas -->
+<section class="faq">
+  <h2 class="faq-title">Perguntas Frequentes</h2>
+  <p class="faq-subtitle">Respostas para as dúvidas mais comuns.</p>
+
+  <div class="faq-list">
+    <details class="faq-item" open>
+      <summary class="faq-question">
+        <span>Como funciona o período de teste?</span>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </summary>
+      <div class="faq-answer">
+        <p>Você tem 14 dias gratuitos para testar todos os recursos. Não é necessário cartão de crédito. Ao final do período, escolha o plano que melhor se adapta à sua necessidade.</p>
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary class="faq-question">
+        <span>Posso cancelar a qualquer momento?</span>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </summary>
+      <div class="faq-answer">
+        <p>Sim, não há fidelidade. Cancele pelo painel de configurações a qualquer momento. O acesso continua até o final do período já pago.</p>
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary class="faq-question">
+        <span>Meus dados estão seguros?</span>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </summary>
+      <div class="faq-answer">
+        <p>Sim. Utilizamos criptografia SSL/TLS, servidores certificados e follow GDPR. Seus dados nunca são compartilhados com terceiros.</p>
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary class="faq-question">
+        <span>Qual a forma de pagamento aceita?</span>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </summary>
+      <div class="faq-answer">
+        <p>Cartão de crédito (todas as bandeiras), boleto bancário e PIX. Planos anuais ganham 20% de desconto.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<style>
+  .faq {
+    padding: var(--space-16) var(--space-6);
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .faq-title {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+    text-align: center;
+    margin-bottom: var(--space-2);
+  }
+
+  .faq-subtitle {
+    font-size: var(--font-size-base);
+    color: var(--color-text-muted);
+    text-align: center;
+    margin-bottom: var(--space-8);
+  }
+
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .faq-item {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: box-shadow var(--transition-fast);
+  }
+
+  .faq-item[open] {
+    box-shadow: var(--shadow-sm);
+  }
+
+  .faq-question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4);
+    cursor: pointer;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text);
+    list-style: none;
+    min-height: 44px;
+  }
+
+  .faq-question::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-chevron {
+    color: var(--color-text-muted);
+    transition: transform var(--transition-fast);
+    flex-shrink: 0;
+  }
+
+  .faq-item[open] .faq-chevron {
+    transform: rotate(180deg);
+  }
+
+  .faq-answer {
+    padding: 0 var(--space-4) var(--space-4);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    line-height: 1.6;
+  }
+
+  .faq-answer p {
+    margin: 0;
+  }
+</style>

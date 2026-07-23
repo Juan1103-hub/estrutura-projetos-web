@@ -1,0 +1,19 @@
+- generic [active] [ref=f2e1]:
+  - generic [ref=f2e4]:
+    - generic [ref=f2e5]:
+      - generic [ref=f2e6]: BakeryManager
+      - generic [ref=f2e7]: Sistema de Gestão de Padaria
+    - generic [ref=f2e9]:
+      - generic [ref=f2e20]: Email ou senha incorretos
+      - generic [ref=f2e10]:
+        - generic [ref=f2e11]: Email
+        - textbox "Email" [ref=f2e12]:
+          - /placeholder: seu@email.com
+          - text: admin@teste.com
+      - generic [ref=f2e13]:
+        - generic [ref=f2e14]: Senha
+        - generic [ref=f2e15]:
+          - textbox "••••••" [ref=f2e16]: admin123
+          - button [ref=f2e17]
+      - button "Entrar" [ref=f2e18]
+  - alert [ref=f2e19]

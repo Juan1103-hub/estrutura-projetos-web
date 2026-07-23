@@ -1,0 +1,69 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e20]:
+    - generic [ref=e23]:
+      - generic [ref=e24]:
+        - generic [ref=e25]:
+          - generic [ref=e26]: BakeryManager
+          - list [ref=e27]:
+            - listitem [ref=e28]:
+              - link "PDV" [ref=e29] [cursor=pointer]:
+                - /url: /pdv
+            - listitem [ref=e35]:
+              - link "Produtos" [ref=e36] [cursor=pointer]:
+                - /url: /products
+            - listitem [ref=e42]:
+              - link "Preços" [ref=e43] [cursor=pointer]:
+                - /url: /prices
+            - listitem [ref=e47]:
+              - link "Estoque" [ref=e48] [cursor=pointer]:
+                - /url: /stock
+            - listitem [ref=e54]:
+              - link "Caixa" [ref=e55] [cursor=pointer]:
+                - /url: /cashier
+            - listitem [ref=e60]:
+              - link "Fluxo de Caixa" [ref=e61] [cursor=pointer]:
+                - /url: /cashflow
+            - listitem [ref=e66]:
+              - link "Vendas" [ref=e67] [cursor=pointer]:
+                - /url: /sales
+            - listitem [ref=e72]:
+              - link "Relatórios" [ref=e73] [cursor=pointer]:
+                - /url: /reports
+        - generic [ref=e77]:
+          - generic [ref=e78]: Gerenciamento
+          - list [ref=e79]:
+            - listitem [ref=e80]:
+              - link "Usuários" [ref=e81] [cursor=pointer]:
+                - /url: /users
+            - listitem [ref=e88]:
+              - link "Clientes" [ref=e89] [cursor=pointer]:
+                - /url: /clients
+            - listitem [ref=e95]:
+              - link "Vendedores" [ref=e96] [cursor=pointer]:
+                - /url: /sellers
+            - listitem [ref=e102]:
+              - link "Categorias" [ref=e103] [cursor=pointer]:
+                - /url: /categories
+            - listitem [ref=e108]:
+              - link "Fornecedores" [ref=e109] [cursor=pointer]:
+                - /url: /suppliers
+            - listitem [ref=e116]:
+              - link "Receitas" [ref=e117] [cursor=pointer]:
+                - /url: /recipes
+        - list [ref=e122]:
+          - listitem [ref=e123]:
+            - link "Configurações" [ref=e124] [cursor=pointer]:
+              - /url: /settings
+      - generic [ref=e130]:
+        - generic [ref=e131]: A
+        - generic [ref=e132]:
+          - paragraph [ref=e133]: Administrador
+          - paragraph [ref=e134]: admin@teste.com
+        - button "Sair" [ref=e135]
+    - main [ref=e136]:
+      - generic [ref=e137]:
+        - button "Toggle Sidebar" [ref=e138]
+        - separator
+      - main [ref=e140]:
+        - paragraph [ref=e142]: Redirecionando...
+  - alert [ref=e19]
