@@ -113,4 +113,3 @@ z.enum(["entry", "exit"], {
 - Um import por linha; evitar `import * as X`
 
 > Nota: este arquivo cobre exclusivamente projetos web (Next.js/React/TS).
-> Regras ADVPL/TLPP/Protheus vivem em outro workspace, não aqui.

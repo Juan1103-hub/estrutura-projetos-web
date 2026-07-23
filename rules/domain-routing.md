@@ -25,20 +25,19 @@ antes de continuar.
 |---|---|---|
 | Estoque / inventário | estoque, inventário, produto, saldo, entrada, saída, movimentação, compra, venda, consumo, perda, almoxarifado, depósito, fornecedor, custo, lote | `rules/inventory-domain.md` |
 | Segurança / dados sensíveis | senha, token, segredo, service_role, RLS, migration destrutiva, dado pessoal | `rules/security-secrets.md` |
+| Financeiro / pagamentos | pagamento, cobrança, faturamento, transação, carteira, saldo monetário, conciliação, estorno, reembolso, moeda, centavos, NF, fiscal, cartão, PIX, stripe, gateway | `rules/finance-domain.md` |
+| LGPD / dados pessoais | dado pessoal, CPF, RG, e-mail, telefone, biometria, consentimento, privacidade, retenção, anonimização, cookie, DPO | `rules/lgpd-domain.md` |
+| Integrações externas | API externa, webhook, gateway externo, OAuth, SSO, SDK, provedor, sandbox, rate limit, retry, idempotência | `rules/integrations-domain.md` |
 
 ## Domínios sem regra especializada ainda
 
-Se o domínio identificado for financeiro/pagamentos, LGPD/dados
-pessoais, integrações externas críticas, ou qualquer outro não listado
-acima:
+Se o domínio identificado não estiver listado acima:
 
 1. Não assumir solução genérica.
 2. Registrar explicitamente no PRD que não existe regra especializada
    para esse domínio no workspace.
 3. Fazer perguntas bloqueadoras equivalentes às da seção "Discovery
-   obrigatório" de `rules/inventory-domain.md`, adaptadas ao domínio
-   (ex.: para financeiro — moeda, conciliação, estornos, split de
-   pagamento, compliance fiscal).
+   obrigatório" de `rules/inventory-domain.md`, adaptadas ao domínio.
 4. Sugerir ao usuário, ao final do planejamento, que uma regra
    `rules/<dominio>-domain.md` seja criada para reuso futuro — mas não
    criar a regra sem aprovação explícita.

@@ -1,0 +1,3 @@
+# Esta pasta contém projetos web individuais.
+# Cada projeto é uma pasta isolada (ex: projects/meu-app/).
+# Não versionar node_modules, .next, dist, .vercel, .env dentro de projetos.

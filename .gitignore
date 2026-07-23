@@ -46,3 +46,23 @@ supabase/.temp/
 *.log
 coverage/
 .nyc_output/
+
+# Playwright MCP logs (gerados, não versionar)
+.playwright-mcp/
+
+# OpenCode plugin artifacts (gerados)
+.opencode/node_modules/
+.opencode/package-lock.json
+.opencode/bun.lock
+
+# Projetos individuais — ignorar artefatos temporários
+projects/*/node_modules/
+projects/*/.next/
+projects/*/dist/
+projects/*/build/
+projects/*/.vercel/
+projects/*/supabase/.temp/
+projects/*/.env
+projects/*/.env.local
+projects/*/coverage/
+projects/*/.nyc_output/
