@@ -20,8 +20,8 @@
 - Estado de projetos isolados com STATE.md por projeto
 - docs/ cresceu: README, workflow, conventions, guides, references
 
-## Pendências Ativas
-- Domínios sem regra especializada: financeiro/pagamentos, LGPD/dados pessoais, integrações externas
+## Regras de Domínio
+- Todas as 5 regras de domínio criadas: estoque, segurança, financeiro, LGPD, integrações
 
 ## Decisões de Arquitetura Aprovadas
 - Template Router como passo 0 do workflow web

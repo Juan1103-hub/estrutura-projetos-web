@@ -1,263 +1,109 @@
-# AGENTS.md — Workspace de Projetos Web
+﻿# AGENTS.md — Workspace Web
 
-Roteador global para desenvolvimento web assistido por IA no OpenCode.
+Workspace multi-projeto OpenCode. **Não é app único nem monorepo npm.**
+Código de apps → projects/<nome>/. Specs SDD → .specs/projects/<nome>/.
+Instruções carregadas automaticamente via opencode.json: este arquivo + DEPLOY.md + rules/*.md (20).
 
-Escopo: HTML, CSS, JavaScript/TypeScript, React, Next.js, Node.js, APIs,
-Supabase/Postgres, autenticação e segurança web.
-
----
-
-## Hierarquia de instruções
-
-1. Instrução explícita do usuário na conversa atual.
-2. Este `AGENTS.md`.
-3. Regras em `rules/` (carregadas automaticamente via `opencode.json`).
-4. Skills específicas em `.opencode/skills/` (carregadas on-demand).
-5. Skills gerais (`~/.config/opencode/skills/`, `~/.claude/skills/`, etc.).
-
-Código e configuração reais do projeto prevalecem sobre documentação
-desatualizada. Nunca ignorar requisito explícito do usuário com base em
-skill ou regra.
+Hierarquia: usuário > este AGENTS.md > rules/* + DEPLOY.md > skills.
+Código real > docs. Não ignorar requisito do usuário por regra/skill.
 
 ---
+## Gotchas críticos (o que agent sempre erra)
 
-## Layout do workspace
+1. **Subagent edit permissions são path-restritas.** frontend-dev só edita src/frontend/**. backend-dev só edita src/backend/**. **Apps reais estão em projects/.** Esses subagentes NÃO podem editar código de projeto. Use quick-fix ou qa-runner para editar em projects/. O orquestrador (este agente) edita por task delegation.
 
-```
-workspace/
-├── AGENTS.md                    # Este roteador
-├── DEPLOY.md                    # Checklist de go-live
-├── opencode.json                # Config OpenCode (alinhada ao schema)
-├── memory.md                    # Memória do workspace
-├── .opencode/                   # Diretório-nativo OpenCode
-│   ├── agents/                  # Subagentes (web/backend/deploy)
-│   ├── commands/                # Comandos /new-project /sdd-start /audit-ui /deploy-check
-│   ├── skills/                  # Skills project-local (carregadas on-demand)
-│   └── rules/                   # Regras específicas do .opencode
-├── rules/                       # Regras contextuais carregadas via instructions
-├── docs/                        # Documentação do workspace
-│   ├── workflow.md              # Fluxo SDD completo
-│   ├── conventions.md          # Padrões de nomenclatura
-│   ├── guides/                  # How-to
-│   └── references/              # Referências arquiteturais
-├── templates/                   # Catálogo
-│   ├── full/                    # Templates completos (clone)
-│   └── snippets/                # Snippets (copiar trecho)
-├── projects/                    # Projetos isolados (projects/<nome>/)
-└── .specs/                      # SDD
-    ├── _template/               # Template vazio p/ clonar
-    ├── STATE.md                 # Estado global do workspace
-    └── projects/<nome>/         # Specs isoladas por projeto
-```
+2. **Projeto novo nunca começa por código.** SDD obrigatório. Comando: /new-project <nome> "<descrição>". Só implementar após APROVAR PLANO E INICIAR.
+
+3. **continue retoma feature/task já registrada em STATE.md.** Não autoriza troca de projeto, escopo ou fase. Se contexto perdido, ler rules/session-recovery.md.
+
+4. **Regras rules/*.md já estão carregadas na sessão** (via opencode.json instructions glob). Este arquivo não repete conteúdo delas — apenas referência quando ler cada uma.
 
 ---
+## Mapa rápido
 
-## Regra máxima — todo projeto novo
+| Path | Função |
+|---|---|
+| projects/<nome>/ | App isolado (código, .env.example, package.json) |
+| projects/digital-card/ | Card game (Node server, Express) |
+| projects/games-landing/ | Landing page estática (HTML/CSS/JS) |
+| projects/status-page/ | Status page (Node) |
+| .specs/projects/<nome>/ | PRD, SPEC, tasks, STATE do projeto |
+| .specs/_template/ | Specs template (clonar via scaffold) |
+| rules/ | 20 regras contextuais (já carregadas) |
+| rules/INDEX.md | Índice de regras por contexto |
+| templates/full/ (4) | Templates completos para clone |
+| templates/snippets/ (4) | Starters menores + config |
+| templates/catalog.md | Catálogo + repos externos |
+| .opencode/commands/ | /new-project, /sdd-start, /audit-ui, /deploy-check |
+| .opencode/agents/ | @web-reviewer, @backend-reviewer, @deploy-checker |
+| docs/ | Workflow SDD, convenções, guias, referências |
+| scripts/scaffold-project.ps1 | Cria estrutura de projeto novo (sem código) |
+| scripts/pre-commit-checks.ps1 | Valida opencode.json, skills, regras, segredos |
+| memory.md | Memória curta do workspace (ler ao retomar) |
 
-**Nenhum projeto novo começa por código, template, dependência, schema, Auth
-ou UI.**
-
-Todo projeto novo inicia obrigatoriamente pela skill `tlc-spec-driven`
-via `/new-project`:
-
-```
-/new-project meu-app "Descrição curta"
-```
-
-Fluxo automaticamente executado:
-
-```
-Discovery → PRD → Tech Decisions → SPEC → Planner →
-Sprint Validator → APROVAR PLANO E INICIAR
-```
-
-NÃO avançar para implementação sem receber exatamente
-`APROVAR PLANO E INICIAR` do usuário.
-
-Durante Discovery/decisões técnicas, ler obrigatoriamente:
-- `templates/catalog.md` e `templates/README.md` — escolher template
-- `rules/stack-selection.md` — regras de seleção e perfis incompatíveis
-- `rules/domain-routing.md` — identificar domínio crítico e ler regra específica
+Nomes: projetos/features **kebab-case**. Componentes **PascalCase**.
 
 ---
+## Fluxo SDD (resumo — detalhes em docs/workflow.md)
 
-## Classificação de tarefas (projetos existentes)
+**Projeto novo:** /new-project <nome> "<descrição>" → scaffold de pastas → Discovery → PRD → Tech Decisions → SPEC → Planner → Sprint Validator → AGUARDANDO APROVAÇÃO → clonar template + implementar
 
-Projeto novo nunca é L0/L1 — sempre passa pelo fluxo da seção anterior.
-Em manutenção de projeto existente, classificar antes de agir:
+**Feature em projeto existente:** /sdd-start <projeto> <feature> → classifica L0 (trivial, altera direto), L1 (SDD reduzido), L2 (SDD completo + regra de domínio)
 
-| Nível | Critério | Fluxo |
-|---|---|---|
-| **L0** | Trivial, sem mudança de comportamento/layout/schema | Alterar direto, sem PRD/SPEC. Informar arquivo alterado e validação |
-| **L1** | Feature pequena/média, poucos arquivos, sem decisão arquitetural nova | `/sdd-start <projeto> <feature>` com profundidade reduzida (Specify + Execute) |
-| **L2** | Sensível: schema, Auth, RLS, pagamento, integração, dado pessoal | `/sdd-start <projeto> <feature>` SDD completo + `rules/domain-routing.md` + regra de domínio aplicável |
+**Antes de schema/RLS/SPEC:** ler rules/domain-routing.md — se gatilho bater, carregar regra especializada:
+- Estoque → inventory-domain.md
+- Segredos/RLS/migrations → security-secrets.md
+- Financeiro → finance-domain.md
+- LGPD/PII → lgpd-domain.md
+- API externa/webhook → integrations-domain.md
+
+**Stack padrão:** Next.js 16 + React 19 + Tailwind v4 + shadcn/ui + TypeScript + Supabase. **Deploy padrão:** Vercel + Supabase. Checklist: DEPLOY.md.
+
+**Seleção de template:** ler templates/catalog.md + rules/stack-selection.md. Justificar escolha contra ≥2 alternativas.
 
 ---
+## Implementação e revisão
 
-## Skills — carregamento seletivo
+- 1 task por vez. 1 commit atômico por task (após aprovação do plano).
+- **Code review obrigatório após cada task** (rules/code-review.md):
+  - Frontend/UI → @web-reviewer
+  - API/DB/Auth → @backend-reviewer
+  - Go-live → @deploy-checker ou /deploy-check <projeto>
+- Revisão: APROVADO → próxima task. REPROVADO → task-fix só do achado, re-revisar. APROVADO COM RESSALVAS → aguardar confirmação.
+- Impeccable anti-pattern = **REPROVADO** em toda task UI.
+- UI nova/alterada: validar no browser (console zero erros, rede zero 4xx/5xx, screenshot).
+- Entrega final: AGUARDANDO ACEITE FINAL DA CUSTOMIZAÇÃO.
 
-17 skills em `.opencode/skills/*/SKILL.md` são descobertas automaticamente
-pelo OpenCode e listadas na `skill` tool. Carregar on-demand quando a tarefa
-corresponder à descrição. Não carregar todas por padrão.
+Comandos de app rodam **dentro** de projects/<nome>/. Workspace root não é package da aplicação.
 
-### Mapeamento comum
+---
+## Segurança (não negociar)
+
+- service_role **nunca** no client / NEXT_PUBLIC_*
+- RLS em toda tabela de negócio exposta
+- AuthZ no servidor e/ou banco — não só UI
+- Migration destrutiva: backup + rollback + aprovação explícita
+- Não commitar .env, tokens, chaves, node_modules, .next, dist
+
+Mais detalhes: rules/security-secrets.md, DEPLOY.md.
+
+---
+## Skills (seletivo — carregar sob demanda)
 
 | Contexto | Skill |
 |---|---|
-| Planejamento, requisitos, SPEC | `tlc-spec-driven` |
-| Frontend design, anti-patterns UI | `impeccable` (ler `.opencode/rules/impeccable.md` para mapeamento de comandos) |
-| Supabase (banco, auth, RLS) | `supabase`, `supabase-postgres-best-practices` |
-| Acessibilidade WCAG 2.1 | `accessibility` |
-| Auditoria web (perf, a11y, SEO, boas práticas) | `web-quality-audit`, `best-practices` |
-| Componentes UI de alto padrão | `frontend-design`, `ui-ux-pro-max` |
-| Debug de browser (console, rede) | `chrome-devtools` |
-| Eficiência de tokens | `token-efficiency`, `coding-guidelines` |
+| Planejamento/SPEC | tlc-spec-driven |
+| Supabase/Postgres | supabase, supabase-postgres-best-practices |
+| UI / anti-patterns IA | impeccable + /audit-ui |
+| A11y WCAG | accessibility |
+| Design visual | frontend-design, ui-ux-pro-max |
+| Browser debug | chrome-devtools |
+| Audit geral | web-quality-audit |
+| Copy/marketing | copywriting, marketing-psychology |
 
-Sobre Impeccable: em toda UI nova ou alteração visual relevante, executar
-`/audit-ui <arquivo|url>`. `impeccable init` apenas uma vez por projeto, no
-bootstrap, antes da primeira tela — não no fim.
+18 skills project-local em .opencode/skills/. Skills globais também disponíveis. Não carregar todas — carregar só a necessária para o contexto atual.
 
 ---
+## Idioma
 
-## Perfis de stack (ler 1 por projeto, nunca 2 incompatíveis)
-
-| Perfil | Regra | Quando |
-|---|---|---|
-| Next.js App completo | `rules/nextjs-app.md` | CRUD complexo, SaaS, e-commerce, blog com API |
-| Next.js Dashboard | `rules/nextjs-dashboard.md` | Sidebar + KPIs + gráficos, backoffice |
-| React SPA (Vite) | `rules/react-vite.md` | SPA sem SSR/SEO, CRUD interno |
-| HTML/CSS/JS estático | `rules/static-html-css-js.md` | Landing, institucional, sem backend |
-
-Padrões visuais transversais (tokens OKLCH, tipografia, contraste, ícones)
-em `rules/design-tokens.md` e `rules/accessibility.md`.
-
-Índice completo de regras por contexto: `rules/INDEX.md`.
-
----
-
-## Domínios críticos
-
-Antes de concluir Discovery ou gerar PRD, decisões técnicas, schema, RLS,
-SPEC ou plano, identificar o domínio de negócio da solicitação.
-
-Se existir regra especializada em `rules/` para esse domínio, **lê-la
-obrigatoriamente** e seguir sua checklist antes de decidir. Ver
-`rules/domain-routing.md` para o mapa palavras-gatilho → regra.
-
-Hoje cobertos:
-- Estoque/inventário/movimentações → `rules/inventory-domain.md`
-- Segurança/dados sensíveis → `rules/security-secrets.md`
-- Financeiro/pagamentos → `rules/finance-domain.md`
-- LGPD/dados pessoais → `rules/lgpd-domain.md`
-- Integrações externas → `rules/integrations-domain.md`
-
-Sem regra especializada ainda: outros domínios não listados. Nesses casos,
-aplicar `rules/security-secrets.md` e fazer perguntas bloqueadoras via tool
-`question` — registrar premissas no PRD. Sugerir ao usuário criar
-`rules/<dominio>-domain.md` para reuso futuro somente após aprovação explícita.
-
----
-
-## Segurança — resumo obrigatório
-
-- Nunca expor `service_role`, tokens, segredos ou valores reais de `.env`.
-- RLS obrigatório em toda tabela exposta ao cliente.
-- Validação e autorização sempre no servidor e/ou banco — nunca apenas na UI.
-- Migrations destrutivas: exigir backup, plano de rollback e aprovação
-  explícita antes de executar.
-
-Detalhes em `rules/security-secrets.md`. Checklist de go-live em `DEPLOY.md`
-ou via `/deploy-check <projeto>`.
-
----
-
-## Revisão de código
-
-Cada task L1 ou L2 deve passar por revisão proporcional ao risco antes
-da próxima task. Usar subagentes via `@mention`:
-
-| Escopo da task | Revisor |
-|---|---|
-| Frontend/UI | `@web-reviewer` |
-| Backend, API, banco, Auth, Supabase | `@backend-reviewer` |
-| Deploy / go-live | `@deploy-checker` |
-| L2 ou mudança sensível | Frontend **e** backend conforme escopo |
-| L1 | Auto-revisão estruturada + subagente quando disponível |
-| L0 | Auto-revisão guiada por checklist |
-
-Não concluir L2 com achado Bloqueador ou Alto sem correção ou exceção
-aprovada. Detalhes e checklist completo em `rules/code-review.md`.
-
-Resultado obrigatório: Status (APROVADO / REPROVADO / APROVADO COM RESSALVAS),
-critérios de aceite avaliados, arquivos revisados, achados por severidade,
-testes executados, próxima ação.
-
-- `APROVADO` → task concluída, próxima liberada.
-- `APROVADO COM RESSALVAS` → aguardar confirmação do usuário.
-- `REPROVADO` → criar task-fix pequena, corrigir e revisar novamente.
-
----
-
-## Ferramentas, MCPs e fallback
-
-Antes de exigir ou usar skill, subagente, MCP, navegador ou comando:
-verificar disponibilidade, usar se existir, ou executar validação manual
-equivalente e declarar a limitação. **Nunca declarar sucesso de ferramenta
-não executada.**
-
-Detalhes em `rules/tools-fallback.md`.
-
----
-
-## Recuperação de sessão
-
-Se ocorrer falha de streaming, compactação, contexto insuficiente, mudança
-de modelo ou qualquer erro que comprometa continuidade, **interromper** e
-seguir `rules/session-recovery.md` antes de retomar.
-
-Sempre ler ao retomar trabalho em feature:
-1. `AGENTS.md` (este arquivo)
-2. `memory.md`
-3. `.specs/STATE.md` (estado global) + `.specs/projects/<projeto>/STATE.md`
-   (estado do projeto ativo)
-4. Artefatos persistidos da feature ativa
-
-"continue" autoriza somente continuar a feature e tarefa já verificadas no
-estado persistido. Não autoriza trocar projeto, escopo ou fase sem confirmar.
-
----
-
-## Comandos customizados disponíveis
-
-| Comando | Uso |
-|---|---|
-| `/new-project <nome> "<descrição>"` | SDD completo para projeto novo |
-| `/sdd-start <projeto> <feature>` | SDD para feature em projeto existente (L1/L2) |
-| `/audit-ui <arquivo\|url>` | Auditoria Impeccable (anti-patterns, a11y, design tokens) |
-| `/deploy-check <projeto>` | Checklist de go-live via `@deploy-checker` |
-
----
-
-## Perguntas ao usuário
-
-Decisão, confirmação ou dado faltante: usar tool `question`. Nunca fazer
-perguntas bloqueadoras em texto puro. Exceção: perguntas triviais (nome de
-arquivo, por exemplo).
-
----
-
-## Idioma e estilo
-
-- Responder e documentar em português (PT-BR).
-- Código e identificadores técnicos em inglês, seguindo convenção da linguagem.
-- Tom direto, sem preâmbulos. Markdown estruturado em respostas longas.
-
----
-
-## Encerramento de entregas
-
-Ao concluir entrega aprovada, após revisão e validação aplicáveis, encerrar com:
-
-```
-AGUARDANDO ACEITE FINAL DA CUSTOMIZAÇÃO
-```
+PT-BR na conversa e docs. Código/ids em inglês. Tom direto.

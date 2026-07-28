@@ -27,5 +27,14 @@
     "prune": true,
     "reserved": 10000
   },
-  "share": "manual"
+  "share": "manual",
+  "mcp": {
+    "docker": {
+      "type": "local",
+      "command": ["docker", "mcp", "gateway", "run"],
+      "enabled": true,
+      "environment": {},
+      "description": "Docker MCP — gerencia containers, volumes, redes e imagens Docker diretamente do agente."
+    }
+  }
 }

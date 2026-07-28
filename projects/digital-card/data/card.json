@@ -1,0 +1,14 @@
+{
+  "name": "Ana Oliveira",
+  "title": "Consultora de Marketing Digital",
+  "company": "Agência Criativa",
+  "email": "ana.oliveira@agencia.com",
+  "phone": "+55 11 99999-8888",
+  "website": "https://anaoliveira.dev",
+  "social": {
+    "linkedin": "https://linkedin.com/in/anaoliveira",
+    "github": "https://github.com/anaoliveira",
+    "whatsapp": "https://wa.me/5511999998888"
+  },
+  "avatar": "https://i.pravatar.cc/200?u=ana"
+}

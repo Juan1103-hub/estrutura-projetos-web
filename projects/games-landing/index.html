@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Level Up - Sua porta de entrada para o universo dos games. Descubra, jogue e conecte-se.">
+  <meta property="og:title" content="Level Up - Mundo dos Games">
+  <meta property="og:description" content="Sua porta de entrada para o universo dos games.">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <title>Level Up - Mundo dos Games</title>
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <a href="#" class="logo" aria-label="Level Up Home">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 12H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+          <path d="M6 12h12"/>
+          <path d="M6 12v6a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-6"/>
+          <path d="M10 16h4"/>
+          <path d="M10 10V8"/>
+          <path d="M14 10V8"/>
+          <path d="M2 12v4a2 2 0 0 0 2 2h2"/>
+          <path d="M20 18h2a2 2 0 0 0 2-2v-4"/>
+        </svg>
+        LEVEL UP
+      </a>
+      <nav aria-label="Navegação principal">
+        <button class="mobile-toggle" aria-label="Abrir menu" aria-expanded="false">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <ul class="nav-list">
+          <li><a href="#games" class="nav-link">Jogos</a></li>
+          <li><a href="#about" class="nav-link">Sobre</a></li>
+          <li><a href="#testimonials" class="nav-link">Depoimentos</a></li>
+          <li><a href="#footer" class="nav-link">Contato</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-bg"></div>
+      <div class="hero-grid"></div>
+      <div class="container">
+        <h1 class="hero-title fade-in">O Universo dos Games<br>Começa Aqui</h1>
+        <p class="hero-subtitle fade-in">
+          Descubra milhares de jogos, conecte-se com jogadores do mundo todo e
+          leve sua experiência gamer ao próximo nível.
+        </p>
+        <div class="hero-actions fade-in">
+          <a href="#games" class="btn btn-primary">
+            Explorar Jogos
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+          <a href="#about" class="btn btn-outline">Saiba Mais</a>
+        </div>
+        <div class="hero-stats fade-in">
+          <div class="stat-item">
+            <span class="stat-number" data-target="10000" data-suffix="+">0</span>
+            <span class="stat-label">Jogos Disponíveis</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" data-target="5000000" data-suffix="+">0</span>
+            <span class="stat-label">Jogadores Ativos</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" data-target="150" data-suffix="+">0</span>
+            <span class="stat-label">Países</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" data-target="9900" data-suffix="%">0</span>
+            <span class="stat-label">Uptime</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section games" id="games">
+      <div class="container">
+        <div class="games-header">
+          <span class="section-label fade-in">Catálogo</span>
+          <h2 class="section-title fade-in">Jogos em Destaque</h2>
+          <p class="section-desc fade-in" style="margin: 0 auto;">
+            Os títulos mais jogados e melhor avaliados da temporada.
+          </p>
+        </div>
+        <div class="games-grid">
+          <article class="game-card fade-in">
+            <img class="game-card-image" src="https://picsum.photos/seed/cyberpunk/400/200" alt="Capa do jogo Neon Horizon" loading="lazy" width="400" height="200">
+            <div class="game-card-body">
+              <span class="game-card-tag rpg">RPG</span>
+              <h3 class="game-card-title">Neon Horizon</h3>
+              <p class="game-card-desc">RPG cyberpunk de mundo aberto com combate dinâmico e história não-linear.</p>
+              <div class="game-card-rating" aria-label="Avaliação 4.8 de 5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" opacity="0.3"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <span style="color: var(--color-text-muted); font-size: var(--font-size-xs); margin-left: var(--space-1);">4.8</span>
+              </div>
+            </div>
+          </article>
+          <article class="game-card fade-in">
+            <img class="game-card-image" src="https://picsum.photos/seed/striker/400/200" alt="Capa do jogo Strike Force" loading="lazy" width="400" height="200">
+            <div class="game-card-body">
+              <span class="game-card-tag fps">FPS</span>
+              <h3 class="game-card-title">Strike Force</h3>
+              <p class="game-card-desc">FPS tático 5v5 com mapas destrutíveis e habilidades únicas por personagem.</p>
+              <div class="game-card-rating" aria-label="Avaliação 4.6 de 5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" opacity="0.3"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <span style="color: var(--color-text-muted); font-size: var(--font-size-xs); margin-left: var(--space-1);">4.6</span>
+              </div>
+            </div>
+          </article>
+          <article class="game-card fade-in">
+            <img class="game-card-image" src="https://picsum.photos/seed/forged/400/200" alt="Capa do jogo Forged Legends" loading="lazy" width="400" height="200">
+            <div class="game-card-body">
+              <span class="game-card-tag action">Ação</span>
+              <h3 class="game-card-title">Forged Legends</h3>
+              <p class="game-card-desc">RPG de ação medieval com combate visceral e um mundo em constante evolução.</p>
+              <div class="game-card-rating" aria-label="Avaliação 4.9 de 5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <span style="color: var(--color-text-muted); font-size: var(--font-size-xs); margin-left: var(--space-1);">4.9</span>
+              </div>
+            </div>
+          </article>
+          <article class="game-card fade-in">
+            <img class="game-card-image" src="https://picsum.photos/seed/speed/400/200" alt="Capa do jogo Velocity X" loading="lazy" width="400" height="200">
+            <div class="game-card-body">
+              <span class="game-card-tag racing">Corrida</span>
+              <h3 class="game-card-title">Velocity X</h3>
+              <p class="game-card-desc">Corrida arcade com físicas realistas, 200 veículos e pistas em todo o mundo.</p>
+              <div class="game-card-rating" aria-label="Avaliação 4.7 de 5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" opacity="0.3"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <span style="color: var(--color-text-muted); font-size: var(--font-size-xs); margin-left: var(--space-1);">4.7</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section about" id="about">
+      <div class="container">
+        <div class="about-content">
+          <span class="section-label fade-in">Sobre Nós</span>
+          <h2 class="section-title fade-in">A Maior Comunidade<br>Gamer da América Latina</h2>
+          <p class="about-text fade-in">
+            A Level Up nasceu da paixão por jogos e da vontade de criar um espaço
+            onde jogadores de todos os níveis pudessem se conectar, competir e
+            descobrir novas experiências. Hoje somos mais de 5 milhões de
+            jogadores ativos em 150 países.
+          </p>
+          <p class="about-text fade-in">
+            Nosso compromisso é oferecer a melhor plataforma para você encontrar
+            seu próximo jogo favorito, fazer amigos e evoluir como jogador.
+          </p>
+          <div class="about-features">
+            <div class="about-feature fade-in">
+              <svg class="about-feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a10 10 0 0 1 10 10c0 5.5-4 10-10 10S2 17.5 2 12 6.5 2 12 2z"/>
+                <path d="M8 12h8"/>
+                <path d="M12 8v8"/>
+              </svg>
+              <div>
+                <h4 class="about-feature-title">Jogos Ilimitados</h4>
+                <p class="about-feature-desc">Acesso a mais de 10 mil títulos</p>
+              </div>
+            </div>
+            <div class="about-feature fade-in">
+              <svg class="about-feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+              <div>
+                <h4 class="about-feature-title">Multiplayer</h4>
+                <p class="about-feature-desc">Jogue com amigos do mundo todo</p>
+              </div>
+            </div>
+            <div class="about-feature fade-in">
+              <svg class="about-feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+              <div>
+                <h4 class="about-feature-title">Recompensas</h4>
+                <p class="about-feature-desc">Ganhe itens exclusivos jogando</p>
+              </div>
+            </div>
+            <div class="about-feature fade-in">
+              <svg class="about-feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                <line x1="12" y1="22.08" x2="12" y2="12"/>
+              </svg>
+              <div>
+                <h4 class="about-feature-title">Cloud Save</h4>
+                <p class="about-feature-desc">Seu progresso salvo na nuvem</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="about-visual fade-in-right">
+          <div class="about-glow about-glow-1"></div>
+          <div class="about-glow about-glow-2"></div>
+          <div class="about-image-wrapper">
+            <img class="about-image" src="https://picsum.photos/seed/gaming-setup/600/500" alt="Setup gamer com monitores e iluminação RGB" loading="lazy" width="600" height="500">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section testimonials" id="testimonials">
+      <div class="container">
+        <div class="testimonials-header">
+          <span class="section-label fade-in">Depoimentos</span>
+          <h2 class="section-title fade-in">O Que Nossos Jogadores Dizem</h2>
+          <p class="section-desc fade-in" style="margin: 0 auto;">
+            Mais de 5 milhões de jogadores confiam na Level Up.
+          </p>
+        </div>
+        <div class="testimonials-grid">
+          <blockquote class="testimonial-card fade-in">
+            <div class="testimonial-stars" aria-label="5 estrelas">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <p class="testimonial-text">
+              "A Level Up mudou completamente minha forma de jogar. Conheci
+              pessoas incríveis e descobri jogos que nunca teria encontrado
+              sozinho. A comunidade é fantástica!"
+            </p>
+            <footer class="testimonial-author">
+              <img class="testimonial-avatar" src="https://picsum.photos/seed/player1/100/100" alt="Foto de Lucas Mendes" loading="lazy" width="44" height="44">
+              <div>
+                <cite class="testimonial-name">Lucas Mendes</cite>
+                <span class="testimonial-role">Jogador há 3 anos</span>
+              </div>
+            </footer>
+          </blockquote>
+          <blockquote class="testimonial-card fade-in">
+            <div class="testimonial-stars" aria-label="5 estrelas">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <p class="testimonial-text">
+              "Finalmente uma plataforma que leva os jogadores a sério. O
+              suporte é rápido, os preços são justos e o catálogo é enorme.
+              Recomendo para todo mundo!"
+            </p>
+            <footer class="testimonial-author">
+              <img class="testimonial-avatar" src="https://picsum.photos/seed/player2/100/100" alt="Foto de Camila Oliveira" loading="lazy" width="44" height="44">
+              <div>
+                <cite class="testimonial-name">Camila Oliveira</cite>
+                <span class="testimonial-role">Game Dev & Jogadora</span>
+              </div>
+            </footer>
+          </blockquote>
+          <blockquote class="testimonial-card fade-in">
+            <div class="testimonial-stars" aria-label="5 estrelas">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <p class="testimonial-text">
+              "Comecei como casual e hoje sou competitivo graças à comunidade
+              da Level Up. Os torneios são incríveis e fiz amigos que levo
+              para a vida. Plataforma nota 10!"
+            </p>
+            <footer class="testimonial-author">
+              <img class="testimonial-avatar" src="https://picsum.photos/seed/player3/100/100" alt="Foto de Rafael Santos" loading="lazy" width="44" height="44">
+              <div>
+                <cite class="testimonial-name">Rafael Santos</cite>
+                <span class="testimonial-role">Jogador Competitivo</span>
+              </div>
+            </footer>
+          </blockquote>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" id="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#" class="logo" aria-label="Level Up Home">
+            <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 12H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+              <path d="M6 12h12"/>
+              <path d="M6 12v6a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-6"/>
+              <path d="M10 16h4"/>
+              <path d="M10 10V8"/>
+              <path d="M14 10V8"/>
+              <path d="M2 12v4a2 2 0 0 0 2 2h2"/>
+              <path d="M20 18h2a2 2 0 0 0 2-2v-4"/>
+            </svg>
+            LEVEL UP
+          </a>
+          <p class="footer-desc">
+            A maior plataforma de games da América Latina. Descubra, jogue e
+            conecte-se com milhões de jogadores.
+          </p>
+          <div class="footer-social">
+            <a href="#" class="footer-social-link" aria-label="Discord">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9.593 10.971c-.542 0-.969.425-.969.948a.959.959 0 0 0 .969.948c.542 0 .969-.425.969-.948a.959.959 0 0 0-.969-.948zm4.873 0c-.542 0-.969.425-.969.948a.959.959 0 0 0 .969.948c.542 0 .969-.425.969-.948a.959.959 0 0 0-.969-.948z"/><path d="M20.317 4.37a19.201 19.201 0 0 0-4.738-1.466.072.072 0 0 0-.077.035c-.203.368-.43.849-.588 1.226a17.787 17.787 0 0 0-5.356 0 11.068 11.068 0 0 0-.597-1.226.075.075 0 0 0-.077-.035 19.09 19.09 0 0 0-4.737 1.466.068.068 0 0 0-.031.027C.717 8.748-.24 13.037.076 17.268a.082.082 0 0 0 .031.056 19.26 19.26 0 0 0 5.8 2.934.074.074 0 0 0 .08-.027 13.33 13.33 0 0 0 1.118-1.816.073.073 0 0 0-.04-.102 12.76 12.76 0 0 1-1.705-.812.072.072 0 0 1-.008-.12c.114-.086.228-.175.338-.265a.071.071 0 0 1 .074-.01 13.39 13.39 0 0 0 11.437 0 .072.072 0 0 1 .076.01c.11.09.224.18.338.266a.072.072 0 0 1-.007.119 11.298 11.298 0 0 1-1.706.812.073.073 0 0 0-.039.102c.332.633.707 1.235 1.117 1.816a.075.075 0 0 0 .08.027 19.17 19.17 0 0 0 5.81-2.934.071.071 0 0 0 .032-.056c.38-4.867-.637-9.129-2.667-12.87a.062.062 0 0 0-.03-.029z"/></svg>
+            </a>
+            <a href="#" class="footer-social-link" aria-label="Twitter/X">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M13.317 10.775 19.146 4h-1.38l-5.059 5.882L8.662 4H4l6.111 8.895L4 20h1.382l5.342-6.21L15.338 20H20l-6.683-9.225Zm-1.892 2.2-.62-.886L5.88 5.039h2.12l3.975 5.688.619.886 5.167 7.393h-2.12l-4.216-6.03Z"/></svg>
+            </a>
+            <a href="#" class="footer-social-link" aria-label="YouTube">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            </a>
+            <a href="#" class="footer-social-link" aria-label="Twitch">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0 1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>
+            </a>
+          </div>
+        </div>
+        <div>
+          <h3 class="footer-column-title">Jogos</h3>
+          <ul class="footer-links">
+            <li><a href="#" class="footer-link">Catálogo</a></li>
+            <li><a href="#" class="footer-link">Lançamentos</a></li>
+            <li><a href="#" class="footer-link">Em Breve</a></li>
+            <li><a href="#" class="footer-link">Ofertas</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="footer-column-title">Empresa</h3>
+          <ul class="footer-links">
+            <li><a href="#" class="footer-link">Sobre Nós</a></li>
+            <li><a href="#" class="footer-link">Carreiras</a></li>
+            <li><a href="#" class="footer-link">Imprensa</a></li>
+            <li><a href="#" class="footer-link">Blog</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="footer-column-title">Suporte</h3>
+          <ul class="footer-links">
+            <li><a href="#" class="footer-link">Central de Ajuda</a></li>
+            <li><a href="#" class="footer-link">Contato</a></li>
+            <li><a href="#" class="footer-link">Status do Servidor</a></li>
+            <li><a href="#" class="footer-link">Reportar Bug</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">&copy; 2026 Level Up. Todos os direitos reservados.</p>
+        <div class="footer-legal">
+          <a href="#" class="footer-legal-link">Política de Privacidade</a>
+          <a href="#" class="footer-legal-link">Termos de Uso</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

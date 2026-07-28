@@ -11,11 +11,13 @@
 - Vercel (deploy frontend)
 - Vitest + Playwright (testes)
 
-## Pendências ativas
+## Regras de domínio disponíveis
 
-- Financeiro/pagamentos: sem regra especializada — tratar via perguntas bloqueadoras
-- LGPD/dados pessoais: sem regra especializada — usar `rules/security-secrets.md`
-- Integrações externas: sem regra especializada
+- Estoque → `rules/inventory-domain.md`
+- Segurança → `rules/security-secrets.md`
+- Financeiro → `rules/finance-domain.md`
+- LGPD → `rules/lgpd-domain.md`
+- Integrações → `rules/integrations-domain.md`
 
 ## Decisões globais do workspace
 
@@ -31,4 +33,4 @@
 
 | Projeto | Pasta | Tier | Status |
 |---|---|---|---|
-| (vazio — novos projetos serão registrados aqui) | — | — | — |
+| qualidade-clinica | projects/qualidade-clinica/ | Complex (L2) | Planejamento concluído — aguardando aprovação |
