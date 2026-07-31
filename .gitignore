@@ -47,6 +47,13 @@ supabase/.temp/
 coverage/
 .nyc_output/
 
+# onp-spec-driven — motor mecânico
+# COMMITAR: .spec/constituicao.md, .spec/features/, .spec/LICOES.md, .spec/config.json
+# IGNORAR: estado runtime do motor (sinais, ledger, config local)
+.spec/verification/
+.spec/licoes.json
+~/.onp-spec/
+
 # Playwright MCP logs (gerados, não versionar)
 .playwright-mcp/
 

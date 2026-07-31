@@ -26,8 +26,11 @@
 - Code review via subagents (web-reviewer, backend-reviewer) obrigatório pós-task
 - Domínios críticos (estoque, segurança) roteados via `rules/domain-routing.md`
 - Projetos vivem em `projects/<nome>/` isolados
-- Specs vivem em `.specs/projects/<nome>/` isolados
-- Skills vivem em `.opencode/skills/` (nativo OpenCode)
+- Specs legados vivem em `.specs/projects/<nome>/` isolados
+- **onp-spec-driven** é a skill SDD padrão (motor mecânico embarcado)
+- Specs onp-spec vivem em `.spec/` com constituição em `.spec/constituicao.md`
+- Constituição de domínio saúde/clínico ativa (P-001 a P-010)
+- Skills ficam em `.claude/skills/` (onp-spec-driven como padrão)
 
 ## Projetos conhecidos
 

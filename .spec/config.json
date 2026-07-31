@@ -1,0 +1,16 @@
+{
+  "versao": "1.0.0",
+  "preset": "saude-clinico",
+  "agent": "claude",
+  "paralelo": {
+    "model": "claude-sonnet-5",
+    "esforco": "alto",
+    "max-faixas": 4
+  },
+  "projetos": {
+    "qualidade-clinica": {
+      "ativo": true,
+      "constituicao": "../.spec/constituicao.md"
+    }
+  }
+}

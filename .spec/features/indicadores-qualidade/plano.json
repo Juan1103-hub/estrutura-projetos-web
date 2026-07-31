@@ -1,0 +1,316 @@
+{
+  "runId": "projetos-web-claude-indicadores-qualidade-ms8uuc9r",
+  "feature": "indicadores-qualidade",
+  "agent": "claude",
+  "geradoEm": "2026-07-31 11:24",
+  "branchTrabalho": "spec/indicadores-qualidade",
+  "baseDir": ".spec/features/indicadores-qualidade",
+  "specDir": ".spec",
+  "repoName": "projetos-web-claude",
+  "logsDir": "../onp-worktrees/projetos-web-claude-indicadores-qualidade-logs",
+  "ondas": [
+    [
+      "faixa-1",
+      "faixa-2",
+      "faixa-3"
+    ],
+    [
+      "faixa-4",
+      "faixa-5",
+      "faixa-6"
+    ],
+    [
+      "faixa-7",
+      "faixa-8",
+      "faixa-9"
+    ],
+    [
+      "faixa-10"
+    ]
+  ],
+  "faixas": [
+    {
+      "id": "faixa-1",
+      "branch": "spec/indicadores-qualidade-faixa-1",
+      "worktree": "../onp-worktrees/projetos-web-claude-indicadores-qualidade-faixa-1",
+      "tarefas": [
+        {
+          "id": "T-001",
+          "titulo": "Server Action para buscar indicadores com metas",
+          "modelo": "claude-sonnet-5",
+          "esforco": "medium",
+          "arquivos": [
+            "src/server/actions/indicators.ts",
+            "src/types/indicators.ts"
+          ],
+          "refs": [
+            "US-001",
+            "AC-001"
+          ]
+        },
+        {
+          "id": "T-002",
+          "titulo": "Server Action para buscar entradas de indicadores (últimos 12 meses)",
+          "modelo": "claude-sonnet-5",
+          "esforco": "medium",
+          "arquivos": [
+            "src/server/actions/indicators.ts"
+          ],
+          "refs": [
+            "US-001",
+            "AC-001",
+            "AC-002"
+          ]
+        },
+        {
+          "id": "T-004",
+          "titulo": "Server Action para lançamento de indicador",
+          "modelo": "claude-sonnet-5",
+          "esforco": "medium",
+          "arquivos": [
+            "src/server/actions/indicators.ts"
+          ],
+          "refs": [
+            "US-002",
+            "AC-004",
+            "AC-005",
+            "AC-006"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "faixa-2",
+      "branch": "spec/indicadores-qualidade-faixa-2",
+      "worktree": "../onp-worktrees/projetos-web-claude-indicadores-qualidade-faixa-2",
+      "tarefas": [
+        {
+          "id": "T-003",
+          "titulo": "Componente TabelaMensalIndicadores",
+          "modelo": "claude-sonnet-5",
+          "esforco": "medium",
+          "arquivos": [
+            "src/components/indicators/tabela-mensal.tsx"
+          ],
+          "refs": [
+            "US-001",
+            "AC-001",
+            "AC-002"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "faixa-3",
+      "branch": "spec/indicadores-qualidade-faixa-3",
+      "worktree": "../onp-worktrees/projetos-web-claude-indicadores-qualidade-faixa-3",
+      "tarefas": [
+        {
+          "id": "T-005",
+          "titulo": "Modal/Formulário de lançamento",
+          "modelo": "claude-sonnet-5",
+          "esforco": "medium",
+          "arquivos": [
+            "src/components/indicators/form-lancamento.tsx"
+          ],
+          "refs": [
+            "US-002",
+            "AC-004",
+            "AC-005",
+            "AC-006"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "faixa-4",
+      "branch": "spec/indicadores-qualidade-faixa-4",
+      "worktree": "../onp-worktrees/projetos-web-claude-indicadores-qualidade-faixa-4",
+      "tarefas": [
+        {
+          "id": "T-006",
+          "titulo": "Componente GraficoLinhaIndicador",
+          "modelo": "claude-sonnet-5",
+          "esforco": "medium",
+          "arquivos": [
+            "src/components/indicators/grafico-linha.tsx"
+          ],
+          "refs": [
+            "US-003",
+            "AC-007"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "faixa-5",
+      "branch": "spec/indicadores-qualidade-faixa-5",
+      "worktree": "../onp-worktrees/projetos-web-claude-indicadores-qualidade-faixa-5",
+      "tarefas": [
+        {
+          "id": "T-007",
+          "titulo": "Componente GraficoBarraConsolidado",
+          "modelo": "claude-sonnet-5",
+          "esforco": "medium",
+          "arquivos": [
+            "src/components/indicators/grafico-barra.tsx"
+          ],
+          "refs": [
+            "US-003",
+            "AC-008"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "faixa-6",
+      "branch": "spec/indicadores-qualidade-faixa-6",
+      "worktree": "../onp-worktrees/projetos-web-claude-indicadores-qualidade-faixa-6",
+      "tarefas": [
+        {
+          "id": "T-008",
+          "titulo": "Página de indicadores do módulo (farmácia)",
+          "modelo": "claude-sonnet-5",
+          "esforco": "medium",
+          "arquivos": [
+            "src/app/(app)/farmacia/indicadores/page.tsx"
+          ],
+          "refs": [
+            "US-001",
+            "US-002",
+            "US-003",
+            "AC-001",
+            "AC-002",
+            "AC-003",
+            "AC-004",
+            "AC-005",
+            "AC-006",
+            "AC-007",
+            "AC-008"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "faixa-7",
+      "branch": "spec/indicadores-qualidade-faixa-7",
+      "worktree": "../onp-worktrees/projetos-web-claude-indicadores-qualidade-faixa-7",
+      "tarefas": [
+        {
+          "id": "T-009",
+          "titulo": "Página de indicadores do módulo (laboratório)",
+          "modelo": "claude-sonnet-5",
+          "esforco": "medium",
+          "arquivos": [
+            "src/app/(app)/laboratorio/indicadores/page.tsx"
+          ],
+          "refs": [
+            "US-001",
+            "US-002",
+            "US-003",
+            "AC-001",
+            "AC-002",
+            "AC-003",
+            "AC-004",
+            "AC-005",
+            "AC-006",
+            "AC-007",
+            "AC-008"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "faixa-8",
+      "branch": "spec/indicadores-qualidade-faixa-8",
+      "worktree": "../onp-worktrees/projetos-web-claude-indicadores-qualidade-faixa-8",
+      "tarefas": [
+        {
+          "id": "T-010",
+          "titulo": "Dashboard geral: cards de indicadores fora da meta",
+          "modelo": "claude-sonnet-5",
+          "esforco": "medium",
+          "arquivos": [
+            "src/app/(app)/dashboard/page.tsx",
+            "src/components/dashboard/section-cards.tsx"
+          ],
+          "refs": [
+            "US-004",
+            "AC-009"
+          ]
+        },
+        {
+          "id": "T-011",
+          "titulo": "Dashboard geral: alertas por severidade",
+          "modelo": "claude-sonnet-5",
+          "esforco": "medium",
+          "arquivos": [
+            "src/app/(app)/dashboard/page.tsx",
+            "src/components/dashboard/alerts-summary.tsx"
+          ],
+          "refs": [
+            "US-004",
+            "AC-010"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "faixa-9",
+      "branch": "spec/indicadores-qualidade-faixa-9",
+      "worktree": "../onp-worktrees/projetos-web-claude-indicadores-qualidade-faixa-9",
+      "tarefas": [
+        {
+          "id": "T-012",
+          "titulo": "Detalhe do indicador (painel lateral)",
+          "modelo": "claude-sonnet-5",
+          "esforco": "medium",
+          "arquivos": [
+            "src/components/indicators/detalhe-indicador.tsx"
+          ],
+          "refs": [
+            "US-005",
+            "AC-011"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "faixa-10",
+      "branch": "spec/indicadores-qualidade-faixa-10",
+      "worktree": "../onp-worktrees/projetos-web-claude-indicadores-qualidade-faixa-10",
+      "tarefas": [
+        {
+          "id": "T-013",
+          "titulo": "Testes dos critérios de aceite",
+          "modelo": "claude-sonnet-5",
+          "esforco": "medium",
+          "arquivos": [
+            "test/indicadores-qualidade.spec.test.js"
+          ],
+          "refs": [
+            "US-001",
+            "US-002",
+            "US-003",
+            "US-004",
+            "US-005",
+            "AC-001",
+            "AC-002",
+            "AC-003",
+            "AC-004",
+            "AC-005",
+            "AC-006",
+            "AC-007",
+            "AC-008",
+            "AC-009",
+            "AC-010",
+            "AC-011"
+          ]
+        }
+      ]
+    }
+  ],
+  "sequenciais": [],
+  "concluidas": [],
+  "avisos": []
+}
