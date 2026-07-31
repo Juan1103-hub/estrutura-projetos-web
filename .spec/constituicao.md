@@ -89,3 +89,53 @@ O paciente PODE exportar seus dados em formato legível por máquina
 O titular pode solicitar exclusão dos dados; o sistema PODE manter o mínimo
 legal (registros de auditoria, dados com prazo legal de retenção) com
 justificativa documentada.
+
+---
+
+## P-011 [DEVE] Autenticação JWT obrigatória em todo endpoint privado
+
+Toda rota que acessa dados de paciente ou dados sensíveis exige token JWT
+válido. O middleware `get_current_user` extrai, valida e busca o usuário
+no banco. Tokens expiram em no máximo 1 hora. Regra completa:
+`rules/auth-security.md` → Autenticação JWT.
+
+- verificação(proibido): `app\.(get|post|put|delete|patch)\(` em `projects/*/src/**/*.{ts,tsx,js,jsx}`
+
+## P-012 [DEVE] Supabase usado APENAS como PostgreSQL gerenciado
+
+O frontend NUNCA se comunica diretamente com o Supabase. Nenhum SDK,
+anon key ou supabase_url no client-side. Toda comunicação com o banco
+passa pelo backend via `DATABASE_URL` + asyncpg. Regra completa:
+`rules/auth-security.md` → Supabase como PostgreSQL.
+
+- verificação(proibido): `createClient|createBrowserClient|supabaseUrl|NEXT_PUBLIC_.*SUPABASE(?!_URL)` em `projects/*/src/**/*.{ts,tsx,js,jsx}`
+- verificação(proibido): `@supabase/` em `projects/*/src/**/*.{ts,tsx,js,jsx}`
+
+## P-013 [DEVE] Nenhum segredo no frontend
+
+JWT_SECRET, DATABASE_URL, service_role e credenciais ficam APENAS no
+backend. O frontend recebe apenas variáveis `NEXT_PUBLIC_*` para
+configuração pública (URL da API, etc.). Regra completa:
+`rules/auth-security.md` → Segredos e Variáveis.
+
+- verificação(proibido): `JWT_SECRET|DATABASE_URL|SERVICE_ROLE|API_KEY` em `projects/*/src/**/*.{ts,tsx,js,jsx}`
+- verificação(proibido): `NEXT_PUBLIC_.*SECRET|NEXT_PUBLIC_.*KEY|NEXT_PUBLIC_.*PASSWORD` em `projects/*/src/**/*.{ts,tsx,js,jsx}`
+
+## P-014 [DEVE] Checklist de produção antes de cada deploy
+
+Antes de subir para produção, o sistema deve passar por checklist
+obrigatório: backend compila, frontend compila, migrações rodam,
+nenhum segredo no bundle, rotas privadas exigem token, frontend não
+acessa Supabase diretamente, CORS configurado, rate limit ativo.
+Reg completa: `rules/auth-security.md` → Checklist de Produção.
+
+- verificação(obrigatório): `[Cc]hecklist` em `DEPLOY.md`
+
+## P-015 [DEVE] CORS e Rate Limit em produção
+
+CORS restringe domínio real do frontend. Rotas sensíveis (login,
+cadastro, reset de senha) têm rate limit. Backend retorna 429
+quando limite excedido. Regra completa:
+`rules/auth-security.md` → CORS e Rate Limit.
+
+- verificação(obrigatório): `cors|rate.limit|429` em `projects/*/src/**/*.{ts,tsx,js,jsx}`

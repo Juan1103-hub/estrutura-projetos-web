@@ -1,6 +1,8 @@
 # DEPLOY.md — Go-Live (Supabase + Vercel)
 
 > Ordem: 1) Supabase (banco+segurança) → 2) Vercel (deploy) → 3) Domínio → 4) Verificação final
+>
+> **Checklist de produção obrigatório** — todos os itens devem ser validados antes de cada deploy.
 
 ## FASE 1 — Supabase: banco de dados
 1. Criar projeto (região próxima aos usuários).
