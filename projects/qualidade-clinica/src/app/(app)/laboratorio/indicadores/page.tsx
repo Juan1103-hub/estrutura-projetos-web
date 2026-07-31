@@ -1,177 +1,83 @@
 "use client"
 
-import { useState } from "react"
+// T-009: Página de indicadores do módulo laboratório
+// Rastreabilidade: US-001, US-002, US-003, US-005 (AC-001 a AC-008, AC-011)
+// Acessível para role 'laboratorio' e role 'qualidade' (Q-001)
+
+import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { CheckCircle2, AlertCircle, Save, Activity } from "lucide-react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Plus, Activity, AlertCircle, CheckCircle2, BarChart3 } from "lucide-react"
+import { TabelaMensalIndicadores } from "@/components/indicators/tabela-mensal"
+import { FormLancamento } from "@/components/indicators/form-lancamento"
+import { GraficoLinhaIndicador } from "@/components/indicators/grafico-linha"
+import { GraficoBarraConsolidado } from "@/components/indicators/grafico-barra"
+import { DetalheIndicador } from "@/components/indicators/detalhe-indicador"
+import { fetchIndicatorsWithTarget, fetchIndicatorEntries } from "@/server/actions/indicators"
+import type { IndicatorRow, IndicatorsResult, ChartLineData, ChartBarData } from "@/types/indicators"
 
-// Indicadores LAB do Excel
-const indicadoresLAB = [
-  {
-    id: "fertilizacao",
-    nome: "Taxa de Fertilização",
-    formula: "(Oócitos fertilizados / Oócitos injetados) × 100",
-    meta: 70,
-    dados: [
-      { mes: "Janeiro", valor: 77, meta: 70 },
-      { mes: "Fevereiro", valor: 80, meta: 70 },
-      { mes: "Março", valor: 85, meta: 70 },
-      { mes: "Abril", valor: 81, meta: 70 },
-      { mes: "Maio", valor: 75, meta: 70 },
-      { mes: "Junho", valor: 81, meta: 70 },
-      { mes: "Julho", valor: 80, meta: 70 },
-      { mes: "Agosto", valor: 80, meta: 70 },
-      { mes: "Setembro", valor: 81, meta: 70 },
-      { mes: "Outubro", valor: 82, meta: 70 },
-      { mes: "Novembro", valor: 82, meta: 70 },
-      { mes: "Dezembro", valor: 95, meta: 70 },
-    ]
-  },
-  {
-    id: "blastocisto",
-    nome: "Taxa de Desenvolvimento de Blastocisto",
-    formula: "(Blastocistos D5 / Oócitos fertilizados) × 100",
-    meta: 50,
-    dados: [
-      { mes: "Janeiro", valor: 52, meta: 50 },
-      { mes: "Fevereiro", valor: 57, meta: 50 },
-      { mes: "Março", valor: 50, meta: 50 },
-      { mes: "Abril", valor: 62, meta: 50 },
-      { mes: "Maio", valor: 53, meta: 50 },
-      { mes: "Junho", valor: 58, meta: 50 },
-      { mes: "Julho", valor: 54, meta: 50 },
-      { mes: "Agosto", valor: 56, meta: 50 },
-      { mes: "Setembro", valor: 60, meta: 50 },
-      { mes: "Outubro", valor: 63, meta: 50 },
-      { mes: "Novembro", valor: 40, meta: 50 },
-      { mes: "Dezembro", valor: 55, meta: 50 },
-    ]
-  },
-  {
-    id: "formacao",
-    nome: "Taxa de Formação de Blastocisto",
-    formula: "(Blast boa qual D5 / Oócit 2PN D1) × 100",
-    meta: 60,
-    dados: [
-      { mes: "Janeiro", valor: 48, meta: 60 },
-      { mes: "Fevereiro", valor: 51, meta: 60 },
-      { mes: "Março", valor: 52, meta: 60 },
-      { mes: "Abril", valor: 55, meta: 60 },
-      { mes: "Maio", valor: 51, meta: 60 },
-      { mes: "Junho", valor: 55, meta: 60 },
-      { mes: "Julho", valor: 48, meta: 60 },
-      { mes: "Agosto", valor: 56, meta: 60 },
-      { mes: "Setembro", valor: 60, meta: 60 },
-      { mes: "Outubro", valor: 60, meta: 60 },
-      { mes: "Novembro", valor: 40, meta: 60 },
-      { mes: "Dezembro", valor: 55, meta: 60 },
-    ]
-  },
-  {
-    id: "sobrevivencia_oocitos",
-    nome: "Taxa Sobrevivência Oócitos Criopreservados",
-    formula: "(Oócitos intactos / Oócitos descong) × 100",
-    meta: 85,
-    dados: [
-      { mes: "Janeiro", valor: 90, meta: 85 },
-      { mes: "Fevereiro", valor: 94, meta: 85 },
-      { mes: "Março", valor: 89, meta: 85 },
-      { mes: "Abril", valor: 83, meta: 85 },
-      { mes: "Maio", valor: 100, meta: 85 },
-      { mes: "Junho", valor: 93, meta: 85 },
-      { mes: "Julho", valor: 93, meta: 85 },
-      { mes: "Agosto", valor: 93, meta: 85 },
-      { mes: "Setembro", valor: 90, meta: 85 },
-      { mes: "Outubro", valor: 87, meta: 85 },
-      { mes: "Novembro", valor: 0, meta: 85 },
-      { mes: "Dezembro", valor: 0, meta: 85 },
-    ]
-  },
-  {
-    id: "sobrevivencia_blast",
-    nome: "Taxa Sobrevivência Blast Criopreservados",
-    formula: "(Blastocistos intactos / Blast descong) × 100",
-    meta: 90,
-    dados: [
-      { mes: "Janeiro", valor: 98, meta: 90 },
-      { mes: "Fevereiro", valor: 96, meta: 90 },
-      { mes: "Março", valor: 97, meta: 90 },
-      { mes: "Abril", valor: 100, meta: 90 },
-      { mes: "Maio", valor: 100, meta: 90 },
-      { mes: "Junho", valor: 96, meta: 90 },
-      { mes: "Julho", valor: 100, meta: 90 },
-      { mes: "Agosto", valor: 100, meta: 90 },
-      { mes: "Setembro", valor: 97, meta: 90 },
-      { mes: "Outubro", valor: 95, meta: 90 },
-      { mes: "Novembro", valor: 0, meta: 90 },
-      { mes: "Dezembro", valor: 0, meta: 90 },
-    ]
-  },
-  {
-    id: "biopsia",
-    nome: "Taxa de Sucesso Biópsia",
-    formula: "(Biópsias DNA detectado / Biópsias realizadas) × 100",
-    meta: 95,
-    dados: [
-      { mes: "Janeiro", valor: 100, meta: 95 },
-      { mes: "Fevereiro", valor: 95, meta: 95 },
-      { mes: "Março", valor: 93, meta: 95 },
-      { mes: "Abril", valor: 93, meta: 95 },
-      { mes: "Maio", valor: 91, meta: 95 },
-      { mes: "Junho", valor: 96, meta: 95 },
-      { mes: "Julho", valor: 100, meta: 95 },
-      { mes: "Agosto", valor: 88, meta: 95 },
-      { mes: "Setembro", valor: 91, meta: 95 },
-      { mes: "Outubro", valor: 89, meta: 95 },
-      { mes: "Novembro", valor: 94, meta: 95 },
-      { mes: "Dezembro", valor: 94, meta: 95 },
-    ]
-  },
-  {
-    id: "clivagem",
-    nome: "Taxa de Clivagem",
-    formula: "(Embriões cliv Dia 2 / Oócit 2PN dia 1) × 100",
-    meta: 90,
-    dados: [
-      { mes: "Janeiro", valor: 96, meta: 90 },
-      { mes: "Fevereiro", valor: 95, meta: 90 },
-      { mes: "Março", valor: 94, meta: 90 },
-      { mes: "Abril", valor: 94, meta: 90 },
-      { mes: "Maio", valor: 92, meta: 90 },
-      { mes: "Junho", valor: 95, meta: 90 },
-      { mes: "Julho", valor: 95, meta: 90 },
-      { mes: "Agosto", valor: 95, meta: 90 },
-      { mes: "Setembro", valor: 97, meta: 90 },
-      { mes: "Outubro", valor: 96, meta: 90 },
-      { mes: "Novembro", valor: 91, meta: 90 },
-      { mes: "Dezembro", valor: 95, meta: 90 },
-    ]
-  },
-]
+export default function IndicadoresLaboratorioPage() {
+  const [data, setData] = useState<IndicatorsResult | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [formOpen, setFormOpen] = useState(false)
+  const [selectedIndicator, setSelectedIndicator] = useState<IndicatorRow | null>(null)
+  const [detailOpen, setDetailOpen] = useState(false)
+  const [lineChartData, setLineChartData] = useState<ChartLineData[]>([])
+  const [barChartData, setBarChartData] = useState<ChartBarData | null>(null)
 
-export default function IndicadoresLabPage() {
-  const [indicadores, setIndicadores] = useState(indicadoresLAB)
-  const [editando, setEditando] = useState<{ind: string, mes: string} | null>(null)
+  const loadData = useCallback(async () => {
+    setLoading(true)
+    const result = await fetchIndicatorsWithTarget("laboratorio")
+    setData(result)
+    setLoading(false)
+  }, [])
 
-  const atualizarDado = (indId: string, mes: string, valor: string) => {
-    setIndicadores(prev => prev.map(ind => {
-      if (ind.id !== indId) return ind
-      return {
-        ...ind,
-        dados: ind.dados.map(d => {
-          if (d.mes !== mes) return d
-          return { ...d, valor: parseFloat(valor) || 0 }
-        })
-      }
-    }))
-  }
+  useEffect(() => { loadData() }, [loadData])
 
-  const getStatus = (valor: number, meta: number) => {
-    if (valor >= meta) return { icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" }
-    return { icon: AlertCircle, color: "text-red-600", bg: "bg-red-50" }
+  useEffect(() => {
+    if (!data) return
+
+    Promise.all(
+      data.indicators.map(async (ind) => {
+        const entries = await fetchIndicatorEntries(ind.id)
+        return { indicator: ind, data: entries }
+      })
+    ).then(setLineChartData)
+
+    const lastMonth = data.months[data.months.length - 1]
+    if (lastMonth) {
+      setBarChartData({
+        indicators: data.indicators.map((ind) => ({
+          name: ind.name,
+          fullName: ind.name,
+          value: ind.entries[lastMonth] ?? 0,
+          target: ind.target,
+          comparator: ind.comparator,
+          isOutOfTarget:
+            (ind.comparator === ">=" && (ind.entries[lastMonth] ?? 0) < ind.target) ||
+            (ind.comparator === "<=" && (ind.entries[lastMonth] ?? 0) > ind.target),
+        })),
+        month: lastMonth,
+      })
+    }
+  }, [data])
+
+  const outOfTargetCount = data
+    ? data.indicators.filter((ind) => {
+        const lastMonth = data.months[data.months.length - 1]
+        const value = lastMonth ? ind.entries[lastMonth] : undefined
+        if (value === undefined) return false
+        return (ind.comparator === ">=" && value < ind.target) ||
+               (ind.comparator === "<=" && value > ind.target)
+      }).length
+    : 0
+
+  const inTargetCount = data ? data.indicators.length - outOfTargetCount : 0
+
+  const handleSelectIndicator = (ind: IndicatorRow) => {
+    setSelectedIndicator(ind)
+    setDetailOpen(true)
   }
 
   return (
@@ -179,137 +85,89 @@ export default function IndicadoresLabPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Indicadores — Laboratório</h1>
-          <p className="text-sm text-muted-foreground">Taxas de performance e qualidade</p>
+          <p className="text-sm text-muted-foreground">
+            Indicadores de qualidade do laboratório de reprodução assistida
+          </p>
         </div>
-        <Button className="gap-2">
-          <Save className="h-4 w-4" />
-          Salvar Alterações
+        <Button className="gap-2" onClick={() => setFormOpen(true)}>
+          <Plus className="h-4 w-4" />
+          Lançar indicador
         </Button>
       </div>
 
-      {/* Cards resumo */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {indicadores.slice(0, 4).map((ind) => {
-          const media = ind.dados.reduce((a, b) => a + b.valor, 0) / 12
-          const status = getStatus(media, ind.meta)
-          const Icon = status.icon
-          
-          return (
-            <Card key={ind.id} className={status.bg}>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium leading-tight">{ind.nome}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-2xl font-bold tabular-nums">{media.toFixed(1)}%</p>
-                    <p className="text-xs text-muted-foreground">Meta: ≥{ind.meta}%</p>
-                  </div>
-                  <Icon className={`h-8 w-8 ${status.color}`} />
-                </div>
-              </CardContent>
-            </Card>
-          )
-        })}
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total de indicadores</CardTitle>
+            <Activity className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold tabular-nums">{data?.indicators.length ?? "—"}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Dentro da meta</CardTitle>
+            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold tabular-nums text-emerald-600">{inTargetCount}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Fora da meta</CardTitle>
+            <AlertCircle className="h-4 w-4 text-red-600" />
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold tabular-nums text-red-600">{outOfTargetCount}</p>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Cards resumo 2 */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {indicadores.slice(4, 7).map((ind) => {
-          const media = ind.dados.reduce((a, b) => a + b.valor, 0) / 12
-          const status = getStatus(media, ind.meta)
-          const Icon = status.icon
-          
-          return (
-            <Card key={ind.id} className={status.bg}>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium leading-tight">{ind.nome}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-2xl font-bold tabular-nums">{media.toFixed(1)}%</p>
-                    <p className="text-xs text-muted-foreground">Meta: ≥{ind.meta}%</p>
-                  </div>
-                  <Icon className={`h-8 w-8 ${status.color}`} />
-                </div>
+      <Tabs defaultValue="tabela">
+        <TabsList>
+          <TabsTrigger value="tabela">Tabela</TabsTrigger>
+          <TabsTrigger value="graficos">
+            <BarChart3 className="h-4 w-4 mr-1.5" />
+            Gráficos
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="tabela" className="mt-4">
+          {loading ? (
+            <Card>
+              <CardContent className="py-12 text-center text-sm text-muted-foreground">
+                Carregando indicadores...
               </CardContent>
             </Card>
-          )
-        })}
-      </div>
+          ) : data ? (
+            <TabelaMensalIndicadores data={data} onSelectIndicator={handleSelectIndicator} />
+          ) : null}
+        </TabsContent>
 
-      {/* Tabelas */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {indicadores.map((ind) => (
-          <Card key={ind.id}>
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <Activity className="h-4 w-4" />
-                {ind.nome}
-              </CardTitle>
-              <p className="text-xs text-muted-foreground">{ind.formula}</p>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-24">Mês</TableHead>
-                    <TableHead className="text-center">Taxa (%)</TableHead>
-                    <TableHead className="text-center">Meta</TableHead>
-                    <TableHead className="w-20">Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {ind.dados.map((d) => {
-                    const status = getStatus(d.valor, d.meta)
-                    const isEditing = editando?.ind === ind.id && editando?.mes === d.mes
-                    
-                    return (
-                      <TableRow key={d.mes} className={d.valor < d.meta ? "bg-red-50/50" : ""}>
-                        <TableCell className="font-medium">{d.mes}</TableCell>
-                        <TableCell>
-                          {isEditing ? (
-                            <Input 
-                              type="number" 
-                              step="0.1"
-                              value={d.valor} 
-                              onChange={(e) => atualizarDado(ind.id, d.mes, e.target.value)}
-                              className="h-8 w-20 text-center"
-                            />
-                          ) : (
-                            <button 
-                              onClick={() => setEditando({ind: ind.id, mes: d.mes})}
-                              className="w-full text-center hover:bg-muted rounded px-2 py-1 tabular-nums"
-                            >
-                              {d.valor}
-                            </button>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-center tabular-nums">{d.meta}%</TableCell>
-                        <TableCell>
-                          <Badge variant={d.valor >= d.meta ? "default" : "destructive"} className="text-xs">
-                            {d.valor >= d.meta ? "OK" : "Fora"}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-              <div className="mt-3 flex justify-end">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setEditando(null)}
-                >
-                  Concluir Edição
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+        <TabsContent value="graficos" className="mt-4 space-y-6">
+          {barChartData && <GraficoBarraConsolidado data={barChartData} />}
+          <div className="grid gap-6 lg:grid-cols-2">
+            {lineChartData.map((lcd) => (
+              <GraficoLinhaIndicador key={lcd.indicator.id} data={lcd} />
+            ))}
+          </div>
+        </TabsContent>
+      </Tabs>
+
+      <FormLancamento
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        indicators={data?.indicators ?? []}
+        onSuccess={loadData}
+      />
+
+      <DetalheIndicador
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+        indicator={selectedIndicator}
+      />
     </div>
   )
 }

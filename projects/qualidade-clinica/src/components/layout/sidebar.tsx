@@ -73,7 +73,7 @@ export function Sidebar() {
   const pathname = usePathname()
 
   // Mapear setor para role
-  const userRole = setor || profile?.role || "farmacia"
+  const userRole = setor || profile?.role
 
   return (
     <aside className="flex h-screen w-[260px] flex-col bg-sidebar text-sidebar-foreground">

@@ -1,0 +1,25 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "qualidade-clinica",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "projects/qualidade-clinica",
+      "port": 3000
+    },
+    {
+      "name": "digital-card",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "projects/digital-card",
+      "port": 3001
+    },
+    {
+      "name": "cafe-landing",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "projects/cafe-landing", "-p", "3002", "--no-clipboard"],
+      "port": 3002
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://claude.ai/config.json",
+  "instructions": [
+    "CLAUDE.md",
+    "DEPLOY.md",
+    "rules/*.md"
+  ],
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep",
+      "Agent",
+      "WebSearch",
+      "WebFetch"
+    ]
+  },
+  "agent": {
+    "defaultAgent": "general-purpose"
+  },
+  "skills": {
+    "directory": ".claude/skills"
+  }
+}

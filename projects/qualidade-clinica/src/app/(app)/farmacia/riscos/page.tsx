@@ -11,26 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus, AlertTriangle, Shield, Activity, Download } from "lucide-react"
 import { exportMatrizRiscos } from "@/lib/export-excel"
-
-// Setores do Excel FAR
-const setores = [
-  { id: "enfermagem", nome: "Enfermagem", responsavel: "Aline Paglioni e Luana Soares", cor: "bg-blue-50 border-blue-200" },
-  { id: "financeiro", nome: "Financeiro", responsavel: "Érika", cor: "bg-emerald-50 border-emerald-200" },
-  { id: "recepcao", nome: "Recepção", responsavel: "Érika", cor: "bg-amber-50 border-amber-200" },
-  { id: "laboratorio", nome: "Laboratório", responsavel: "Luciana", cor: "bg-cyan-50 border-cyan-200" },
-  { id: "farmacia", nome: "Farmácia", responsavel: "Ana Paula Almeida", cor: "bg-rose-50 border-rose-200" },
-]
-
-// Riscos mockados baseados no Excel
-const riscosIniciais = [
-  { id: 1, setor: "enfermagem", atividade: "Organização para punção oocitária", oQue: "Não imprimir documentos necessários", consequencia: "Atraso na execução das tarefas", severidade: 2, probabilidade: 1, grau: 2, contingencia: "Imprimir documentos no dia do procedimento", tratamento: "Treinamento e escala semanal", monitoramento: "Documentos prontos antes", meta: "Não se aplica" },
-  { id: 2, setor: "enfermagem", atividade: "Dupla checagem de exames sorológicos", oQue: "Não conferir exames antes da punção", consequencia: "Chegar no dia sem resultado", severidade: 4, probabilidade: 4, grau: 16, contingencia: "Abertura de não conformidade", tratamento: "Conscientização da equipe", monitoramento: "Verificação dos check-lists", meta: "Nunca acontecer" },
-  { id: 3, setor: "financeiro", atividade: "Entrega de termo de consentimento", oQue: "Envio de termo errado ao paciente", consequencia: "Fragilidade de realizar procedimento sem resguardo", severidade: 4, probabilidade: 3, grau: 12, contingencia: "Comunicar e substituir imediatamente", tratamento: "Verificar com médico antes do envio", monitoramento: "Através do indicador", meta: "Zerar ocorrências" },
-  { id: 4, setor: "recepcao", atividade: "Cadastro de paciente", oQue: "Cadastro errado do nome", consequencia: "Identificação errada em todos os processos", severidade: 4, probabilidade: 5, grau: 20, contingencia: "Corrigir imediatamente", tratamento: "Fortalecer barreiras e treinamentos", monitoramento: "Conferir dados no agendamento", meta: "Diminuir ocorrências" },
-  { id: 5, setor: "laboratorio", atividade: "Coleta Seminal", oQue: "Etiqueta com nome de outro paciente", consequencia: "Processar amostra de paciente errado", severidade: 5, probabilidade: 1, grau: 5, contingencia: "Correção e substituição da etiqueta", tratamento: "Treinamento e barreiras", monitoramento: "Através de indicadores", meta: "Nunca acontecer" },
-  { id: 6, setor: "farmacia", atividade: "Medicação prescrita", oQue: "Separação da medicação errada", consequencia: "Faltar dose correta na aplicação", severidade: 4, probabilidade: 3, grau: 12, contingencia: "Entrar em contato com paciente", tratamento: "Separar medicação corretamente", monitoramento: "Treinamento da equipe", meta: "Nunca acontecer" },
-  { id: 7, setor: "farmacia", atividade: "Dispensação de perfurocortantes", oQue: "Não orientar sobre descarte de agulhas", consequencia: "Acidente com perfurocortante", severidade: 5, probabilidade: 5, grau: 25, contingencia: "Orientar e disponibilizar garrafa", tratamento: "Encaminhar caso à CIPA", monitoramento: "Educação continuada", meta: "Nunca acontecer" },
-]
+import { setores, riscosIniciais } from "@/data/riscos"
 
 const getGrauColor = (grau: number) => {
   if (grau >= 15) return "bg-red-100 text-red-800 border-red-300"
@@ -192,22 +173,22 @@ export default function MapeamentoRiscosPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Atividade</TableHead>
-                  <TableHead>O Que? E Se?</TableHead>
-                  <TableHead>Consequência</TableHead>
-                  <TableHead className="text-center">S</TableHead>
-                  <TableHead className="text-center">P</TableHead>
-                  <TableHead className="text-center">Grau</TableHead>
-                  <TableHead>Contingência</TableHead>
-                  <TableHead>Tratamento</TableHead>
+                  <TableHead className="min-w-[180px] max-w-[220px]">Atividade</TableHead>
+                  <TableHead className="min-w-[200px] max-w-[260px]">O Que? E Se?</TableHead>
+                  <TableHead className="min-w-[180px] max-w-[220px]">Consequência</TableHead>
+                  <TableHead className="text-center w-10">S</TableHead>
+                  <TableHead className="text-center w-10">P</TableHead>
+                  <TableHead className="text-center w-28">Grau</TableHead>
+                  <TableHead className="min-w-[180px] max-w-[240px]">Contingência</TableHead>
+                  <TableHead className="min-w-[180px] max-w-[240px]">Tratamento</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {riscosFiltrados.map((risco) => (
                   <TableRow key={risco.id}>
-                    <TableCell className="font-medium max-w-[200px]">{risco.atividade}</TableCell>
-                    <TableCell className="max-w-[250px]">{risco.oQue}</TableCell>
-                    <TableCell className="max-w-[200px]">{risco.consequencia}</TableCell>
+                    <TableCell className="font-medium truncate max-w-[220px]" title={risco.atividade}>{risco.atividade}</TableCell>
+                    <TableCell className="truncate max-w-[260px]" title={risco.oQue}>{risco.oQue}</TableCell>
+                    <TableCell className="truncate max-w-[220px]" title={risco.consequencia}>{risco.consequencia}</TableCell>
                     <TableCell className="text-center">{risco.severidade}</TableCell>
                     <TableCell className="text-center">{risco.probabilidade}</TableCell>
                     <TableCell className="text-center">
@@ -215,8 +196,8 @@ export default function MapeamentoRiscosPage() {
                         {risco.grau} — {getGrauLabel(risco.grau)}
                       </Badge>
                     </TableCell>
-                    <TableCell className="max-w-[200px]">{risco.contingencia}</TableCell>
-                    <TableCell className="max-w-[200px]">{risco.tratamento}</TableCell>
+                    <TableCell className="truncate max-w-[240px]" title={risco.contingencia}>{risco.contingencia}</TableCell>
+                    <TableCell className="truncate max-w-[240px]" title={risco.tratamento}>{risco.tratamento}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

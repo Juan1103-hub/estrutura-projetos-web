@@ -1,0 +1,8 @@
+{
+  "testCommand": "cd projects/qualidade-clinica && npx vitest run --reporter=json --outputFile=../../.spec/verification/raw.json",
+  "reporter": "vitest-json",
+  "reporterOutputFile": ".spec/verification/raw.json",
+  "testGlobs": ["test/**", "tests/**", "src/**/*.test.*", "src/**/*.spec.*", "__tests__/**", "projects/*/src/**/*.test.*"],
+  "srcGlobs": ["src/**", "projects/*/src/**"],
+  "ignoreGlobs": ["node_modules/**", ".git/**", "dist/**", "build/**", "coverage/**", ".spec/**", "projects/*/src/components/ui/**", "projects/*/src/components/layout/**", "projects/*/src/data/**", "projects/*/src/hooks/**", "projects/*/src/middleware.ts", "projects/*/src/app/(auth)/**", "projects/*/src/app/(app)/admin/**", "projects/*/src/app/(app)/farmacia/indicadores-extras/**", "projects/*/src/app/(app)/farmacia/medicacao-controlada/**", "projects/*/src/app/(app)/farmacia/riscos/**", "projects/*/src/app/(app)/laboratorio/controles/**", "projects/*/src/app/(app)/laboratorio/insumos/**", "projects/*/src/app/layout.tsx", "projects/*/src/app/page.tsx", "projects/*/src/app/favicon.ico", "projects/*/src/app/globals.css"]
+}

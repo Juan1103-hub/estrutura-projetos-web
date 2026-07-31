@@ -2,6 +2,7 @@
   "versao": "1.0.0",
   "preset": "saude-clinico",
   "agent": "claude",
+  "testCommand": "cd projects/qualidade-clinica && npx vitest run --reporter=json --outputFile=../../.spec/verification/raw.json",
   "paralelo": {
     "model": "claude-sonnet-5",
     "esforco": "alto",

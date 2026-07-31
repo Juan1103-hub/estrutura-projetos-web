@@ -3,59 +3,20 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Snowflake, Thermometer, Droplets, Save, AlertTriangle, CheckCircle2 } from "lucide-react"
-
-// Botijões do Excel LAB
-const botijoes = [
-  { id: "bot1", nome: "Bot 1", min: 35, max: 41 },
-  { id: "bot2", nome: "Bot 2", min: 35, max: 41 },
-  { id: "bot3", nome: "Bot 3", min: 35, max: 41 },
-  { id: "bot4", nome: "Bot 4", min: 25, max: 38 },
-  { id: "bot5", nome: "Bot 5", min: 25, max: 38 },
-  { id: "bot6", nome: "Bot 6", min: 36, max: 42 },
-  { id: "bot7", nome: "Bot 7", min: 36, max: 42 },
-  { id: "bot8", nome: "Bot 8", min: 36, max: 42 },
-  { id: "bot9", nome: "Bot 9", min: 36, max: 42 },
-  { id: "bot10", nome: "Bot 10", min: 36, max: 42 },
-]
-
-// Equipamentos do Excel LAB
-const equipamentos = [
-  { id: "thermo", nome: "Incubadora THERMO", tipo: "co2_temp" },
-  { id: "ksys1", nome: "Incubadora K-systems 1", tipo: "co2_temp" },
-  { id: "ksys2", nome: "Incubadora K-systems 2", tipo: "co2_temp" },
-  { id: "estufa1", nome: "Estufa 1", tipo: "temp" },
-  { id: "placa1", nome: "Placa aq.1", tipo: "temp" },
-  { id: "placa2", nome: "Placa aq.2", tipo: "temp" },
-  { id: "placa3", nome: "Placa aq.3", tipo: "temp" },
-  { id: "tubos1", nome: "Sup. Tubos1", tipo: "temp" },
-  { id: "tubos2", nome: "Sup Tubos2", tipo: "temp" },
-  { id: "tubos3", nome: "Sup Tubos3", tipo: "temp" },
-  { id: "placa1s", nome: "Placa aq.1s", tipo: "temp" },
-  { id: "lab", nome: "Laboratório", tipo: "temp_umid" },
-  { id: "crio", nome: "Sala Crio", tipo: "temp_umid" },
-]
-
-// Dados mockados nitrogênio (semanal)
-const nitrogenioInicial = [
-  { semana: "Semana 1", bot1: 35, bot2: 40, bot3: 37, bot4: 33, bot5: 31, bot6: 38, bot7: 37, bot8: 36, bot9: 38, bot10: 37 },
-  { semana: "Semana 2", bot1: 38, bot2: 40, bot3: 39, bot4: 36, bot5: 33, bot6: 39, bot7: 38, bot8: 41, bot9: 40, bot10: 39 },
-  { semana: "Semana 3", bot1: 37, bot2: 39, bot3: 35, bot4: 34, bot5: 32, bot6: 40, bot7: 40, bot8: 39, bot9: 39, bot10: 40 },
-  { semana: "Semana 4", bot1: 35, bot2: 41, bot3: 38, bot4: 36, bot5: 37, bot6: 41, bot7: 37, bot8: 40, bot9: 38, bot10: 38 },
-]
-
-// Dados mockados temperatura (diário)
-const temperaturaInicial = [
-  { data: "2025-01-01", thermo_co2: 8.4, thermo_temp: 37, ksys1_co2: 8, ksys1_temp: 37.1, ksys2_co2: 8, ksys2_temp: 37.1, estufa1: 37, placa1: 37, placa2: 37, placa3: 37, tubos1: 37, tubos2: 37, tubos3: 37, placa1s: 37, lab_temp: 32, lab_umid: 59, crio_temp: 23, crio_umid: 65 },
-  { data: "2025-01-02", thermo_co2: 8.3, thermo_temp: 37, ksys1_co2: 7.9, ksys1_temp: 37, ksys2_co2: 8.2, ksys2_temp: 37, estufa1: 37, placa1: 37, placa2: 37, placa3: 37, tubos1: 37, tubos2: 37, tubos3: 37, placa1s: 37, lab_temp: 32, lab_umid: 56, crio_temp: 23, crio_umid: 61 },
-]
+import { Snowflake, Thermometer, Droplets, Save, AlertTriangle, CheckCircle2, Settings, SlidersHorizontal, GripHorizontal } from "lucide-react"
+import { botijoes, salasLimitesInicial, incubadorasInicial, placasInicial, nitrogenioInicial, temperaturaInicial } from "@/data/controles"
 
 export default function ControlesLabPage() {
-  const [abaAtiva, setAbaAtiva] = useState("nitrogenio")
+  const [abaAtiva, setAbaAtiva] = useState("limites")
   const [nitrogenio, setNitrogenio] = useState(nitrogenioInicial)
   const [temperatura, setTemperatura] = useState(temperaturaInicial)
+  const [botijoesState, setBotijoesState] = useState(botijoes)
+  const [salasState, setSalasState] = useState(salasLimitesInicial)
+  const [incubadorasState, setIncubadorasState] = useState(incubadorasInicial)
+  const [placasState, setPlacasState] = useState(placasInicial)
   const [editandoNitro, setEditandoNitro] = useState<{semana: string, bot: string} | null>(null)
   const [editandoTemp, setEditandoTemp] = useState<{data: string, campo: string} | null>(null)
 
@@ -74,7 +35,7 @@ export default function ControlesLabPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Controles Laboratório</h1>
-          <p className="text-sm text-muted-foreground">Nitrogênio líquido e temperatura/umidade</p>
+          <p className="text-sm text-muted-foreground">Nitrogênio, temperatura, umidade e limites configuráveis</p>
         </div>
         <Button className="gap-2">
           <Save className="h-4 w-4" />
@@ -82,8 +43,19 @@ export default function ControlesLabPage() {
         </Button>
       </div>
 
-      {/* Abas simples */}
+      {/* Abas */}
       <div className="flex gap-2 border-b">
+        <button
+          onClick={() => setAbaAtiva("limites")}
+          className={`flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+            abaAtiva === "limites"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <SlidersHorizontal className="h-4 w-4" />
+          Limites
+        </button>
         <button
           onClick={() => setAbaAtiva("nitrogenio")}
           className={`flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
@@ -108,13 +80,319 @@ export default function ControlesLabPage() {
         </button>
       </div>
 
+      {/* Aba Limites */}
+      {abaAtiva === "limites" && (
+        <div className="space-y-6">
+          {/* Nitrogênio — 13 bujões */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Snowflake className="h-4 w-4 text-cyan-600" />
+                Nitrogênio — 13 Bujões
+              </CardTitle>
+              <p className="text-xs text-muted-foreground">Limites individuais por botijão (cm)</p>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Botijão</TableHead>
+                      <TableHead className="text-center w-28">Mínimo (cm)</TableHead>
+                      <TableHead className="text-center w-28">Máximo (cm)</TableHead>
+                      <TableHead className="text-center w-24">Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {botijoesState.map((b) => (
+                      <TableRow key={b.id}>
+                        <TableCell className="font-medium">{b.nome}</TableCell>
+                        <TableCell>
+                          <Input
+                            type="number"
+                            value={b.min}
+                            onChange={(e) => setBotijoesState(botijoesState.map(bj => bj.id === b.id ? { ...bj, min: parseInt(e.target.value) || 0 } : bj))}
+                            className="h-8 text-center"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Input
+                            type="number"
+                            value={b.max}
+                            onChange={(e) => setBotijoesState(botijoesState.map(bj => bj.id === b.id ? { ...bj, max: parseInt(e.target.value) || 0 } : bj))}
+                            className="h-8 text-center"
+                          />
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {b.max > b.min ? (
+                            <span className="text-xs text-emerald-600 flex items-center justify-center gap-1">
+                              <CheckCircle2 className="h-3 w-3" /> OK
+                            </span>
+                          ) : (
+                            <span className="text-xs text-red-600 flex items-center justify-center gap-1">
+                              <AlertTriangle className="h-3 w-3" /> Inválido
+                            </span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Umidade — 4 salas */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Droplets className="h-4 w-4 text-cyan-600" />
+                Umidade — 4 Salas
+              </CardTitle>
+              <p className="text-xs text-muted-foreground">Limites individuais por sala (%)</p>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Sala</TableHead>
+                      <TableHead className="text-center w-28">Mínimo (%)</TableHead>
+                      <TableHead className="text-center w-28">Máximo (%)</TableHead>
+                      <TableHead className="text-center w-24">Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {salasState.map((s) => (
+                      <TableRow key={s.id}>
+                        <TableCell className="font-medium">{s.nome}</TableCell>
+                        <TableCell>
+                          <Input
+                            type="number"
+                            value={s.umidadeMin}
+                            onChange={(e) => setSalasState(salasState.map(sl => sl.id === s.id ? { ...sl, umidadeMin: parseInt(e.target.value) || 0 } : sl))}
+                            className="h-8 text-center"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Input
+                            type="number"
+                            value={s.umidadeMax}
+                            onChange={(e) => setSalasState(salasState.map(sl => sl.id === s.id ? { ...sl, umidadeMax: parseInt(e.target.value) || 0 } : sl))}
+                            className="h-8 text-center"
+                          />
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {s.umidadeMax > s.umidadeMin ? (
+                            <span className="text-xs text-emerald-600 flex items-center justify-center gap-1">
+                              <CheckCircle2 className="h-3 w-3" /> OK
+                            </span>
+                          ) : (
+                            <span className="text-xs text-red-600 flex items-center justify-center gap-1">
+                              <AlertTriangle className="h-3 w-3" /> Inválido
+                            </span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Temperatura — 4 salas */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Thermometer className="h-4 w-4 text-orange-600" />
+                Temperatura Ambiente — 4 Salas
+              </CardTitle>
+              <p className="text-xs text-muted-foreground">Limites individuais por sala (°C)</p>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Sala</TableHead>
+                      <TableHead className="text-center w-28">Mínimo (°C)</TableHead>
+                      <TableHead className="text-center w-28">Máximo (°C)</TableHead>
+                      <TableHead className="text-center w-24">Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {salasState.map((s) => (
+                      <TableRow key={s.id}>
+                        <TableCell className="font-medium">{s.nome}</TableCell>
+                        <TableCell>
+                          <Input
+                            type="number"
+                            step="0.1"
+                            value={s.tempMin}
+                            onChange={(e) => setSalasState(salasState.map(sl => sl.id === s.id ? { ...sl, tempMin: parseFloat(e.target.value) || 0 } : sl))}
+                            className="h-8 text-center"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Input
+                            type="number"
+                            step="0.1"
+                            value={s.tempMax}
+                            onChange={(e) => setSalasState(salasState.map(sl => sl.id === s.id ? { ...sl, tempMax: parseFloat(e.target.value) || 0 } : sl))}
+                            className="h-8 text-center"
+                          />
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {s.tempMax > s.tempMin ? (
+                            <span className="text-xs text-emerald-600 flex items-center justify-center gap-1">
+                              <CheckCircle2 className="h-3 w-3" /> OK
+                            </span>
+                          ) : (
+                            <span className="text-xs text-red-600 flex items-center justify-center gap-1">
+                              <AlertTriangle className="h-3 w-3" /> Inválido
+                            </span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Incubadoras — 3 unidades */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <GripHorizontal className="h-4 w-4 text-purple-600" />
+                Incubadoras — 3 Unidades
+              </CardTitle>
+              <p className="text-xs text-muted-foreground">Limites individuais por incubadora (°C)</p>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Unidade</TableHead>
+                      <TableHead className="text-center w-28">Mínimo (°C)</TableHead>
+                      <TableHead className="text-center w-28">Máximo (°C)</TableHead>
+                      <TableHead className="text-center w-24">Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {incubadorasState.map((inc) => (
+                      <TableRow key={inc.id}>
+                        <TableCell className="font-medium">{inc.nome}</TableCell>
+                        <TableCell>
+                          <Input
+                            type="number"
+                            step="0.1"
+                            value={inc.min}
+                            onChange={(e) => setIncubadorasState(incubadorasState.map(i => i.id === inc.id ? { ...i, min: parseFloat(e.target.value) || 0 } : i))}
+                            className="h-8 text-center"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Input
+                            type="number"
+                            step="0.1"
+                            value={inc.max}
+                            onChange={(e) => setIncubadorasState(incubadorasState.map(i => i.id === inc.id ? { ...i, max: parseFloat(e.target.value) || 0 } : i))}
+                            className="h-8 text-center"
+                          />
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {inc.max > inc.min ? (
+                            <span className="text-xs text-emerald-600 flex items-center justify-center gap-1">
+                              <CheckCircle2 className="h-3 w-3" /> OK
+                            </span>
+                          ) : (
+                            <span className="text-xs text-red-600 flex items-center justify-center gap-1">
+                              <AlertTriangle className="h-3 w-3" /> Inválido
+                            </span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Placas — 6 unidades */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <GripHorizontal className="h-4 w-4 text-amber-600" />
+                Placas — 6 Unidades
+              </CardTitle>
+              <p className="text-xs text-muted-foreground">Limites individuais por placa (°C)</p>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Unidade</TableHead>
+                      <TableHead className="text-center w-28">Mínimo (°C)</TableHead>
+                      <TableHead className="text-center w-28">Máximo (°C)</TableHead>
+                      <TableHead className="text-center w-24">Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {placasState.map((p) => (
+                      <TableRow key={p.id}>
+                        <TableCell className="font-medium">{p.nome}</TableCell>
+                        <TableCell>
+                          <Input
+                            type="number"
+                            step="0.1"
+                            value={p.min}
+                            onChange={(e) => setPlacasState(placasState.map(pl => pl.id === p.id ? { ...pl, min: parseFloat(e.target.value) || 0 } : pl))}
+                            className="h-8 text-center"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Input
+                            type="number"
+                            step="0.1"
+                            value={p.max}
+                            onChange={(e) => setPlacasState(placasState.map(pl => pl.id === p.id ? { ...pl, max: parseFloat(e.target.value) || 0 } : pl))}
+                            className="h-8 text-center"
+                          />
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {p.max > p.min ? (
+                            <span className="text-xs text-emerald-600 flex items-center justify-center gap-1">
+                              <CheckCircle2 className="h-3 w-3" /> OK
+                            </span>
+                          ) : (
+                            <span className="text-xs text-red-600 flex items-center justify-center gap-1">
+                              <AlertTriangle className="h-3 w-3" /> Inválido
+                            </span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* Conteúdo Nitrogênio */}
       {abaAtiva === "nitrogenio" && (
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Nível do Nitrogênio — Janeiro</CardTitle>
             <p className="text-xs text-muted-foreground">
-              Bot 1/2/3: min 35cm máx 41cm | Bot 4/5: min 25cm máx 38cm | Bot 6-10: min 36cm máx 42cm
+              Limites individuais configurados na aba "Limites"
             </p>
           </CardHeader>
           <CardContent>
@@ -123,7 +401,7 @@ export default function ControlesLabPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Semana</TableHead>
-                    {botijoes.map(b => (
+                    {botijoesState.map(b => (
                       <TableHead key={b.id} className="text-center">
                         <div className="flex flex-col items-center">
                           <span>{b.nome}</span>
@@ -137,7 +415,7 @@ export default function ControlesLabPage() {
                   {nitrogenio.map((row) => (
                     <TableRow key={row.semana}>
                       <TableCell className="font-medium">{row.semana}</TableCell>
-                      {botijoes.map(b => {
+                      {botijoesState.map(b => {
                         const valor = row[b.id as keyof typeof row] as number
                         const status = checkNivel(valor, b.min, b.max)
                         return (
@@ -221,17 +499,17 @@ export default function ControlesLabPage() {
                         </div>
                       </TableCell>
                       <TableCell className={`text-center ${checkTemp(row.estufa1, 36.5, 37.5)}`}>{row.estufa1}</TableCell>
-                      <TableCell className={`text-center ${checkTemp(row.placa1, 36, 38)}`}>{row.placa1}</TableCell>
-                      <TableCell className={`text-center ${checkTemp(row.placa2, 36, 38)}`}>{row.placa2}</TableCell>
-                      <TableCell className={`text-center ${checkTemp(row.placa3, 36, 38)}`}>{row.placa3}</TableCell>
+                      <TableCell className={`text-center ${checkTemp(row.placa1, placasState[0].min, placasState[0].max)}`}>{row.placa1}</TableCell>
+                      <TableCell className={`text-center ${checkTemp(row.placa2, placasState[1].min, placasState[1].max)}`}>{row.placa2}</TableCell>
+                      <TableCell className={`text-center ${checkTemp(row.placa3, placasState[2].min, placasState[2].max)}`}>{row.placa3}</TableCell>
                       <TableCell className={`text-center ${checkTemp(row.tubos1, 36, 38)}`}>{row.tubos1}</TableCell>
                       <TableCell className={`text-center ${checkTemp(row.tubos2, 36, 38)}`}>{row.tubos2}</TableCell>
                       <TableCell className={`text-center ${checkTemp(row.tubos3, 36, 38)}`}>{row.tubos3}</TableCell>
                       <TableCell className={`text-center ${checkTemp(row.placa1s, 36, 38)}`}>{row.placa1s}</TableCell>
                       <TableCell className="text-center">
                         <div className="flex flex-col">
-                          <span className={checkTemp(row.lab_temp, 20, 25)}>{row.lab_temp}</span>
-                          <span className={checkTemp(row.lab_umid, 40, 60)}>{row.lab_umid}%</span>
+                          <span className={checkTemp(row.lab_temp, salasState[0].tempMin, salasState[0].tempMax)}>{row.lab_temp}</span>
+                          <span className={checkTemp(row.lab_umid, salasState[0].umidadeMin, salasState[0].umidadeMax)}>{row.lab_umid}%</span>
                         </div>
                       </TableCell>
                       <TableCell className="text-center">

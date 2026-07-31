@@ -10,25 +10,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus, Save, Calendar, User, AlertCircle, CheckCircle2, Clock } from "lucide-react"
-
-// Dados mockados
-const indicadoresExtrasIniciais = [
-  { id: 1, mes: "Janeiro", indicador: "Erros de Administração", causa: "Falta de treinamento", acao: "Realizar treinamento da equipe", prazo: "2025-02-15", responsavel: "Luana", status: "pendente" },
-  { id: 2, mes: "Janeiro", indicador: "Falha no Estoque", causa: "Fornecedor atrasou entrega", acao: "Contatar fornecedor alternativo", prazo: "2025-02-10", responsavel: "Ana Paula", status: "analisado" },
-  { id: 3, mes: "Fevereiro", indicador: "Erros na Montagem", causa: "Kit incompleto", acao: "Revisar lista de materiais", prazo: "2025-03-01", responsavel: "Luana", status: "pendente" },
-]
-
-const statusOptions = [
-  { value: "pendente", label: "Pendente", color: "bg-amber-100 text-amber-800 border-amber-300" },
-  { value: "analisado", label: "Analisado", color: "bg-emerald-100 text-emerald-800 border-emerald-300" },
-]
+import { indicadoresExtrasIniciais, statusOptions } from "@/data/indicadores-extras"
 
 export default function IndicadoresExtrasPage() {
   const [registros, setRegistros] = useState(indicadoresExtrasIniciais)
   const [novoOpen, setNovoOpen] = useState(false)
   const [novo, setNovo] = useState({ mes: "", indicador: "", causa: "", acao: "", prazo: "", responsavel: "" })
 
-  const handleSalvar = () => {
+  const handleSave = () => {
     if (!novo.mes || !novo.indicador || !novo.causa || !novo.acao || !novo.prazo || !novo.responsavel) return
     setRegistros([...registros, { ...novo, id: registros.length + 1, status: "pendente" }])
     setNovo({ mes: "", indicador: "", causa: "", acao: "", prazo: "", responsavel: "" })
@@ -205,7 +194,7 @@ export default function IndicadoresExtrasPage() {
                 <Input value={novo.responsavel} onChange={(e) => setNovo({ ...novo, responsavel: e.target.value })} />
               </div>
             </div>
-            <Button onClick={handleSalvar} className="w-full">Salvar Registro</Button>
+            <Button onClick={handleSave} className="w-full">Salvar Registro</Button>
           </div>
         </DialogContent>
       </Dialog>
