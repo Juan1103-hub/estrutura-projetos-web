@@ -76,6 +76,12 @@ O onp-spec escolhe entre:
 2. Só o test runner decide pass/fail
 3. Feature só fecha quando `audit --ci` sai com exit 0
 
+### Regras importantes
+- **Perguntar ao usuário sobre estilo visual** antes de criar layouts
+- **Evitar designs genéricos** que pareçam "gerados por IA"
+- **Perguntar referências visuais** (cores, fontes, disposição)
+- **Não usar o padrão padrão** (hero + 4 cards + 3 depoimentos + 2 preços)
+
 ## Regras (carregar sob demanda via rules/INDEX.md)
 
 | Regra | Quando ler |
