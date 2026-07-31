@@ -32,6 +32,32 @@
 </span>
 ```
 
+### Datas
+
+- Sempre usar formato brasileiro: `dd/mm/aaaa`
+- Para exibição: `new Date().toLocaleDateString('pt-BR')`
+- Para input: campos com máscara `dd/mm/aaaa`
+- Respeitar fuso horário do Brasil
+
+### IDs
+
+- Todos os IDs de entidades devem ser **UUID**
+- Nunca usar auto-incremento numérico
+- Gerar UUID no backend antes de salvar
+
+### Markdown
+
+- Campos de descrição podem usar Markdown
+- Editar em texto puro, exibir formatado
+- Usar library como `react-markdown` ou `markdown-it`
+
+### Upload de Arquivos
+
+- Organizar em subpastas por ID da entidade
+- Exemplo: `storage/uploads/{entidade-id}/arquivo.pdf`
+- Nunca modificar arquivos na pasta de dados do usuário
+- Validar tipo e tamanho antes de salvar
+
 ---
 
 ## Code Review

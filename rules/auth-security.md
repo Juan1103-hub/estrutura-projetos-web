@@ -121,9 +121,23 @@ Configurar `alembic.ini/env.py` com `create_async_engine`. Executar `alembic upg
 ### CORS e Rate Limit
 
 - CORS em produção restringe domínio real do frontend
+- CORS local deve ser ergonômico (aceitar localhost com qualquer porta)
 - Login, cadastro, reset de senha têm rate limit
 - Ações públicas sensíveis consideram CAPTCHA/Turnstile
 - Backend retorna 429 quando limite excedido
+
+### Health Check
+
+- Endpoint `/api/health` sem autenticação
+- Responder com status HTTP 200 e payload simples
+- Permitir que frontend, Docker e serviços de infra verifiquem a saúde
+- Não exigir API Key, Bearer token ou qualquer credencial
+
+### Dados do Usuário
+
+- Nunca modificar arquivos na pasta de dados do usuário
+- Upload em subpastas organizadas por ID da entidade
+- Validar tipo e tamanho de arquivos antes de salvar
 
 ### Logs e Observabilidade
 

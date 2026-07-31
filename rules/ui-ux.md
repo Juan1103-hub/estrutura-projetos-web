@@ -70,3 +70,21 @@ npx @axe-core/cli https://localhost:3000
 
 - Zero erros de acessibilidade antes de merge
 - Avisos documentados e justificados
+
+---
+
+## Comunicação com o Usuário
+
+### NUNCA usar alert() ou confirm()
+
+- Usar componentes Modal/Dialog para confirmações
+- Usar Toast/Snackbar para notificações
+- Mensagens de erro inline nos formulários
+
+### Formato de Datas e Números
+
+- Datas: formato brasileiro `dd/mm/aaaa`
+- Hora: formato brasileiro `HH:mm`
+- Números: separador de milhar com ponto, decimal com vírgula
+- Moeda: `R$ 1.234,56` (padrão brasileiro)
+- Respeitar fuso horário do Brasil (UTC-3)
