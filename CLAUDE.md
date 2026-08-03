@@ -1,80 +1,71 @@
-# CLAUDE.md — Workspace Web Multi-Projetos
+# CLAUDE.md
 
-## Estrutura do Workspace
-- **Código de apps** → `projects/<nome>/`
-- **Specs onp-spec-driven** → `.spec/` (motor mecânico, constituição, features)
-- **Regras** → `rules/*.md` (10 regras consolidadas, carregar sob demanda)
-- **Skills** → `.claude/skills/` (onp-spec-driven)
-- **Agentes** → `.claude/agents/` (web-reviewer, backend-reviewer, deploy-checker)
-- **Templates** → `templates/full/` e `templates/snippets/`
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Workspace — Visão Geral
+
+Multi-projetos web. Cada app vive em `projects/<nome>/`. O fluxo de desenvolvimento é **spec-anchored**: especificação auditada mecanicamente contra o código, sempre.
+
+```
+projects/<nome>/          ← código dos apps
+.spec/                    ← specs, constituição, features
+rules/*.md                ← regras por domínio (carregar sob demanda)
+.claude/skills/           ← onp-spec-driven (motor embarcado)
+.claude/agents/           ← web-reviewer, backend-reviewer, deploy-checker
+templates/full/           ← next-shadcn-admin-dashboard, nextjs-landing-page, fast-saas-nextjs
+```
 
 Hierarquia: usuário > este CLAUDE.md > rules/* > skills.
 Código real > docs. Não ignorar requisito do usuário por regra/skill.
 
-## Como conversar — Vibe Coding
+## Comandos Essenciais
 
-O usuário não é técnico. Comunicação deve ser:
+**Motor onp-spec** (roda na raiz do projeto):
+```bash
+node .claude/skills/onp-spec-driven/scripts/onp-spec.mjs new <feature>        # Criar spec + tasks
+node .claude/skills/onp-spec-driven/scripts/onp-spec.mjs scaffold <feature>   # Gerar esqueletos de testes
+node .claude/skills/onp-spec-driven/scripts/onp-spec.mjs plano <feature>      # Plano de execução paralela
+node .claude/skills/onp-spec-driven/scripts/onp-spec.mjs verify <feature>     # Rodar testes e registrar prova
+node .claude/skills/onp-spec-driven/scripts/onp-spec.mjs audit --ci           # Gate mecânico (exit 0 = OK)
+node .claude/skills/onp-spec-driven/scripts/onp-spec.mjs status               # Status de todas as features
+```
 
-- **Linguagem simples**: explicar como se fosse para um amigo, sem jargão
-- **Ser proativo**: sugerir a melhor abordagem, não esperar o usuário perguntar
-- **Recomendar, não perguntar**: quando faz sentido, fazer e mostrar resultado
-- **Explicar o "porquê"**: sempre justificar decisões técnicas em palavras fáceis
-- **Traduzir termos**: "server action" = "ação que roda no servidor", "middleware" = "verificação no caminho", etc.
-- **Evitar listas enormes**: resumir, priorizar, ir direto ao ponto
-- **Mostrar progresso**: dizer o que está fazendo e por quê, em tempo real
-- **Se algo dá errado**: explicar o problema simplesmente e já vir com a solução
+## Arquitetura — Como as Peças se Conectam
 
-NUNCA usar: "implementar", "deploy", "refatorar", "tipar", "instanciar", "renderizar",
-"escopo", "mock", "fixture", "pipeline", "bundle", "lazy load", "code split" sem explicar.
+O workspace opera com dois "cérebros" trabalhando juntos:
 
-Em vez de: "Vou criar um Server Action para buscar os dados"
-Prefira: "Vou criar uma ação que busca os dados no banco"
+1. **O motor onp-spec** (`scripts/onp-spec.mjs`) — mecânico, determinístico. Ele cria specs, gera tarefas, audita código contra a especificação e decide (via exit code) se algo está pronto. Não é "AI confiando que obedeceu" — é a máquina provando.
 
-Em vez de: "Preciso configurar o middleware de autenticação"
-Prefira: "Vou colocar uma verificação que checa se o usuário está logado antes de acessar"
+2. **Os agents do Claude** (`.claude/agents/`) — revisam código em profundidade: frontend (`web-reviewer`), backend (`backend-reviewer`), deploy (`deploy-checker`). Cada um tem ferramentas específicas e não edita arquivos.
+
+O fluxo de uma feature:
+- `onp-spec new` cria a spec em `.spec/features/<nome>/spec.md` e tarefas em `tasks.md`
+- O motor gera o plano de execução paralela em `plano.json` (com worktrees isolados)
+- `verify` roda os testes e grava prova em `.spec/verification/`
+- `audit --ci` cruza tudo e dá o veredicto final
+
+**Templates** são referências, não cópia cega. O onp-spec decide qual usar na fase PROJETAR — não pergunte ao usuário.
+
+## Identidade Visual — nunca reciclar o mesmo padrão
+
+Cada projeto/app tem o seu **design com personalidade própria** — nenhuma feature sai com o mesmo visual de um projeto anterior só porque "já funcionou". Isso vale para TODO novo projeto/feature:
+
+- **Na fase PROJETAR (features grandes), decidir a identidade visual e o modelo.** Perguntar ao usuário sobre referências e estilo (com opções concretas e diferentes), e registrar a decisão no `design.md` da feature: direção visual, paleta, tipografia, componentes.
+- **Evitar o "visual de IA":** nenhuma seção genérica por reflexo (hero + 4 cards + depoimentos), nenhum azul SaaS padrão como paleta automática. Pensar primeiro em quem usa e no que o produto precisa parecer.
+- **Modelo pode variar por projeto.** Não "todos usam o mesmo modelo" por inércia — decidir por critério (densidade da interface, esforço) e registrar.
+- Se a fase Projetar for pulada por engano (tarefa pequena que cresceu), **PARE e faça as perguntas de design antes de implementar** — design depois custa 10× mais caro.
+
+Exemplo aplicado: o Kanban da Vórtice Mineral usa uma identidade "painel industrial de operações" (ardósia quente + laranja âmbar de segurança), decidida e registrada em `.spec/features/gestao-tarefas-kanban/design.md`.
+
+> **Nota de precedência:** a skill onp-spec (`.claude/skills/`) NÃO deve ser alterada para resolver isso — este CLAUDE.md é onde a regra de identidade visual mora (hierarquia: usuário > CLAUDE.md > rules > skills).
 
 ## Stack Padrão
 Next.js 16 + React 19 + Tailwind v4 + shadcn/ui + TypeScript + Supabase
-Deploy padrão: Vercel + Supabase
+Deploy: Vercel + Supabase
 
-## Fluxo SDD — onp-spec-driven
+## Como Conversar — Vibe Coding
 
-**Skill:** `.claude/skills/onp-spec-driven/`
-**Motor:** `node .claude/skills/onp-spec-driven/scripts/onp-spec.mjs <comando>`
-
-```
-ESPECIFICAR → PROJETAR → TAREFAS → PLANO → EXECUTAR → AUDITAR → APRENDER
-```
-
-### Comandos
-- `onp-spec new <feature>` — Criar spec + tasks
-- `onp-spec scaffold <feature>` — Gerar esqueletos de testes
-- `onp-spec plano <feature>` — Plano de execução paralela
-- `onp-spec verify <feature>` — Rodar testes e registrar prova
-- `onp-spec audit --ci` — Gate mecânico (exit 0 = OK)
-- `onp-spec status` — Status de todas as features
-
-### Fase PROJETAR — onde o onp-spec define a estrutura
-
-Na fase PROJETAR, o onp-spec-driven decide sozinho a melhor estrutura para o projeto:
-
-1. **Analisa** o que a feature precisa (dados, telas, integrações)
-2. **Define** a estrutura de pastas e arquivos ideal
-3. **Monta** o esqueleto dos componentes e ações
-4. **Usa** os templates como referência (não cópia cega)
-
-O onp-spec escolhe entre:
-- `templates/full/next-shadcn-admin-dashboard/` — para dashboards com sidebar
-- `templates/full/nextjs-landing-page/` — para landing pages
-- `templates/full/fast-saas-nextjs/` — para SaaS completos
-- Ou cria estrutura do zero se nenhum template servir
-
-**Regra:** o onp-spec decide, o usuário aprova. Não perguntar "qual template prefere?" — o motor já sabe.
-
-### Definição de pronto
-1. Todo critério de aceite vira teste com `@spec:AC-xxx`
-2. Só o test runner decide pass/fail
-3. Feature só fecha quando `audit --ci` sai com exit 0
+O usuário não é técnico. Comunicação em linguagem simples, como para um amigo. Ser proativo, sugerir abordagens, explicar o "porquê". Traduzir termos: "server action" = "ação que roda no servidor", "middleware" = "verificação no caminho". NUNCA usar sem explicar: "implementar", "deploy", "refatorar", "tipar", "instanciar", "renderizar", "escopo", "mock", "fixture", "pipeline", "bundle", "lazy load", "code split".
 
 ## Regras (carregar sob demanda via rules/INDEX.md)
 
@@ -91,15 +82,12 @@ O onp-spec escolhe entre:
 | `workflow.md` | Seleção de stack, fallback, recuperação |
 
 ## Convenções
-- Projetos/features em **kebab-case**
-- Componentes em **PascalCase**
+- Projetos/features em **kebab-case**, componentes em **PascalCase**
 - Código/ids em inglês, docs em PT-BR
-- 1 task por vez, 1 commit atômico por task
-- Code review obrigatório após cada task
+- 1 task por vez, 1 commit atômico por task, code review após cada task
 
 ## Segurança (não negociar)
 - `service_role` **nunca** no client
-- RLS em toda tabela de negócio exposta
-- AuthZ no servidor e/ou banco
+- RLS em toda tabela de negócio exposta, AuthZ no servidor e/ou banco
 - Migration destrutiva: backup + rollback + aprovação
 - Não commitar .env, tokens, chaves, node_modules, .next, dist

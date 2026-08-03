@@ -1,5 +1,5 @@
 {
-  "testCommand": "cd projects/qualidade-clinica && npx vitest run --reporter=json --outputFile=../../.spec/verification/raw.json",
+  "testCommand": "npx vitest run --config projects/gestao-tarefas-kanban/vitest.config.mjs --reporter=json --outputFile=.spec/verification/raw.json",
   "reporter": "vitest-json",
   "reporterOutputFile": ".spec/verification/raw.json",
   "testGlobs": ["test/**", "tests/**", "src/**/*.test.*", "src/**/*.spec.*", "__tests__/**", "projects/*/src/**/*.test.*"],

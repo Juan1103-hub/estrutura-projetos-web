@@ -9,6 +9,13 @@
       "port": 3000
     },
     {
+      "name": "landing-page-informativa",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "projects/landing-page-informativa",
+      "port": 3003
+    },
+    {
       "name": "digital-card",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
@@ -20,6 +27,13 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["serve", "projects/cafe-landing", "-p", "3002", "--no-clipboard"],
       "port": 3002
+    },
+    {
+      "name": "gestao-tarefas-kanban",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "projects/gestao-tarefas-kanban",
+      "port": 3004
     }
   ]
 }
