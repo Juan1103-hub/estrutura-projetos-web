@@ -1,0 +1,371 @@
+# Spec: Sistema de Gestão de Tarefas Kanban - Vórtice Mineral
+
+> feature: gestao-tarefas-kanban
+> status: rascunho
+
+## Contexto
+
+A Vórtice Mineral precisa de um sistema de gestão de tarefas no modelo Kanban para que supervisores possam delegar, acompanhar e monitorar tarefas de equipes operacionais (Almoxarifado, Compras e Administrativo), garantindo visibilidade da execução, cumprimento de prazos e medição de produtividade.
+
+## Histórias
+
+### US-006 — Autenticação e controle de acesso por perfil
+
+Como usuário do sistema, quero fazer login com meu e-mail e senha e acessar apenas as funcionalidades do meu perfil (Supervisor, Almoxarife, Comprador ou Assistente Administrativo), para que o sistema garanta segurança e permissões adequadas.
+
+#### AC-012 — Login com credenciais válidas
+
+- **Dado** que sou um usuário cadastrado
+- **Quando** acesso a tela de login, insiro e-mail e senha corretos e clico em "Entrar"
+- **Então** sou redirecionado para o dashboard do meu perfil e vejo meu nome no canto superior direito
+
+#### AC-013 — Bloqueio de acesso com credenciais inválidas
+
+- **Dado** que estou na tela de login
+- **Quando** insiro e-mail ou senha incorretos e clico em "Entrar"
+- **Então** vejo uma mensagem "E-mail ou senha incorretos" e permaneço na tela de login
+
+#### AC-014 — Controle de permissões por perfil
+
+- **Dado** que fiz login como Almoxarife
+- **Quando** acesso o sistema
+- **Então** vejo apenas minhas tarefas e não tenho acesso às funcionalidades de criação, edição ou exclusão de tarefas de outros colaboradores
+
+### US-007 — Criar tarefas (Supervisor)
+
+Como supervisor, quero criar novas tarefas definindo título, descrição, responsável, prazo, prioridade e categoria, para delegar atividades às equipes operacionais.
+
+#### AC-015 — Criar tarefa com dados obrigatórios
+
+- **Dado** que sou um supervisor logado
+- **Quando** clico em "Nova Tarefa", preencho título "Inventário Setor A", descrição, seleciono responsável "João Silva", defino prazo para 5 dias úteis, prioridade "Alta" e categoria "Almoxarifado" e clico em "Criar"
+- **Então** a tarefa aparece na coluna "A Fazer" do quadro Kanban e o responsável João Silva vê a tarefa na sua lista
+
+#### AC-016 — Validação de campos obrigatórios ao criar tarefa
+
+- **Dado** que estou criando uma nova tarefa
+- **Quando** deixo o campo "Título" vazio e clico em "Criar"
+- **Então** vejo a mensagem "O título é obrigatório" e a tarefa não é criada
+
+#### AC-017 — Criar tarefa com checklist
+
+- **Dado** que estou criando uma nova tarefa
+- **Quando** adiciono itens de checklist "Contar itens", "Registrar divergências" e "Gerar relatório" e clico em "Criar"
+- **Então** a tarefa é criada com os 3 itens de checklist desmarcados e visíveis no cartão
+
+### US-008 — Editar e excluir tarefas (Supervisor)
+
+Como supervisor, quero editar ou excluir tarefas existentes, para corrigir informações ou cancelar atividades que não são mais necessárias.
+
+#### AC-018 — Editar dados de uma tarefa
+
+- **Dado** que existe uma tarefa "Inventário Setor A" na coluna "A Fazer"
+- **Quando** clico no cartão, altero o prazo para 3 dias úteis e mudo a prioridade para "Crítica" e clico em "Salvar"
+- **Então** o cartão exibe o novo prazo e a nova prioridade, e o responsável recebe notificação da alteração
+
+#### AC-019 — Excluir tarefa
+
+- **Dado** que existe uma tarefa "Cotação Material X"
+- **Quando** clico no cartão, clico em "Excluir" e confirmo a exclusão
+- **Então** a tarefa desaparece do quadro Kanban e não aparece mais em nenhuma lista ou relatório
+
+### US-009 — Visualizar quadro Kanban
+
+Como usuário do sistema, quero visualizar um quadro Kanban com colunas (Backlog, A Fazer, Em Andamento, Aguardando Terceiros, Aguardando Aprovação, Concluído, Cancelado) e cartões de tarefas, para ter visão geral do status de todas as atividades.
+
+#### AC-020 — Exibir colunas do Kanban
+
+- **Dado** que estou logado no sistema
+- **Quando** acesso a página do quadro Kanban
+- **Então** vejo 7 colunas na ordem: Backlog, A Fazer, Em Andamento, Aguardando Terceiros, Aguardando Aprovação, Concluído, Cancelado
+
+#### AC-021 — Exibir cartões com informações resumidas
+
+- **Dado** que existe uma tarefa "Cotação Fornecedor Y" na coluna "Em Andamento"
+- **Quando** visualizo o quadro Kanban
+- **Então** vejo um cartão com título, responsável, prazo, prioridade (com cor visual) e ícone de categoria
+
+#### AC-022 — Contador de tarefas por coluna
+
+- **Dado** que existem 3 tarefas na coluna "A Fazer" e 5 tarefas na coluna "Em Andamento"
+- **Quando** visualizo o quadro Kanban
+- **Então** vejo o número "3" no cabeçalho da coluna "A Fazer" e "5" no cabeçalho da coluna "Em Andamento"
+
+### US-010 — Mover tarefas entre colunas (arrastar e soltar)
+
+Como usuário operacional, quero arrastar cartões de tarefas entre colunas, para atualizar o status das atividades de forma visual e rápida.
+
+#### AC-023 — Arrastar tarefa para nova coluna
+
+- **Dado** que sou o responsável pela tarefa "Inventário Setor A" que está na coluna "A Fazer"
+- **Quando** arrasto o cartão e solto na coluna "Em Andamento"
+- **Então** o cartão aparece na coluna "Em Andamento", o status da tarefa é atualizado e o supervisor recebe notificação da mudança
+
+#### AC-024 — Impedir movimentação não autorizada
+
+- **Dado** que sou Almoxarife e existe uma tarefa "Cotação Material Z" de outro colaborador
+- **Quando** tento arrastar o cartão
+- **Então** o cartão não se move e vejo a mensagem "Você não tem permissão para mover esta tarefa"
+
+### US-011 — Atualizar status e adicionar observações (Operacional)
+
+Como colaborador operacional, quero atualizar o status da minha tarefa, adicionar observações e anexar arquivos, para registrar o andamento das atividades.
+
+#### AC-025 — Adicionar comentário em tarefa
+
+- **Dado** que sou o responsável pela tarefa "Inventário Setor A"
+- **Quando** abro o cartão, escrevo "Encontradas 5 divergências no setor A3" no campo de comentário e clico em "Enviar"
+- **Então** o comentário aparece na timeline da tarefa com meu nome, data e hora, e o supervisor recebe notificação
+
+#### AC-026 — Anexar arquivo em tarefa
+
+- **Dado** que estou visualizando minha tarefa "Relatório Mensal"
+- **Quando** clico em "Anexar arquivo", seleciono um PDF "relatorio_jan.pdf" e faço upload
+- **Então** o arquivo aparece na lista de anexos do cartão com nome, tamanho e link para download
+
+#### AC-027 — Marcar item do checklist como concluído
+
+- **Dado** que minha tarefa possui checklist com 3 itens e nenhum está marcado
+- **Quando** marco o checkbox "Contar itens"
+- **Então** o item aparece como concluído, o contador do checklist mostra "1/3 concluídos" e o progresso visual é atualizado
+
+### US-012 — Aprovar ou reprovar tarefas concluídas (Supervisor)
+
+Como supervisor, quero aprovar ou reprovar tarefas que os colaboradores marcaram como concluídas, para garantir qualidade e reabrí-las se necessário.
+
+#### AC-028 — Aprovar tarefa concluída
+
+- **Dado** que existe uma tarefa "Inventário Setor A" na coluna "Aguardando Aprovação"
+- **Quando** clico no cartão, reviso e clico em "Aprovar"
+- **Então** a tarefa move para a coluna "Concluído", o responsável recebe notificação de aprovação e a tarefa não pode mais ser editada
+
+#### AC-029 — Reprovar e reabrir tarefa
+
+- **Dado** que existe uma tarefa "Relatório Divergências" na coluna "Aguardando Aprovação"
+- **Quando** clico no cartão, escrevo "Faltam evidências fotográficas", clico em "Reprovar"
+- **Então** a tarefa volta para a coluna "Em Andamento", o responsável recebe notificação com a justificativa e pode continuar trabalhando
+
+### US-013 — Alertas de prazo e atraso
+
+Como supervisor, quero receber alertas automáticos quando tarefas estão próximas do vencimento ou atrasadas, para agir preventivamente.
+
+#### AC-030 — Alerta de tarefa próxima ao vencimento
+
+- **Dado** que uma tarefa "Cotação Urgente" vence em 1 dia e ainda está em "A Fazer"
+- **Quando** acesso o dashboard às 9h da manhã
+- **Então** vejo uma notificação "Tarefa 'Cotação Urgente' vence amanhã" e o cartão exibe um indicador visual laranja de "vence em breve"
+
+#### AC-031 — Alerta de tarefa atrasada
+
+- **Dado** que uma tarefa "Inventário Setor B" tinha prazo para ontem e ainda está em "Em Andamento"
+- **Quando** acesso o dashboard hoje
+- **Então** vejo uma notificação "Tarefa 'Inventário Setor B' está atrasada há 1 dia" e o cartão exibe um indicador visual vermelho de "atrasada"
+
+### US-014 — Dashboard gerencial com indicadores
+
+Como supervisor, quero visualizar um dashboard com indicadores de tarefas (total abertas, em andamento, concluídas, atrasadas) e produtividade por colaborador, para monitorar o desempenho da equipe.
+
+#### AC-032 — Exibir contadores de tarefas
+
+- **Dado** que existem 10 tarefas abertas, 5 em andamento, 15 concluídas e 2 atrasadas
+- **Quando** acesso o dashboard gerencial
+- **Então** vejo 4 cards exibindo "10 Abertas", "5 Em Andamento", "15 Concluídas" e "2 Atrasadas"
+
+#### AC-033 — Exibir produtividade por colaborador
+
+- **Dado** que João Silva concluiu 8 tarefas no mês e Maria Santos concluiu 12 tarefas
+- **Quando** acesso o dashboard gerencial
+- **Então** vejo um gráfico de barras ou tabela com ranking: "1. Maria Santos - 12 tarefas" e "2. João Silva - 8 tarefas"
+
+#### AC-034 — Exibir taxa de conclusão no prazo
+
+- **Dado** que no último mês foram concluídas 20 tarefas, sendo 16 no prazo e 4 atrasadas
+- **Quando** acesso o dashboard gerencial
+- **Então** vejo o indicador "Taxa de Conclusão no Prazo: 80%" (16/20 = 80%)
+
+### US-015 — Filtros e pesquisa avançada
+
+Como usuário do sistema, quero filtrar tarefas por responsável, categoria, prioridade, período e status, para encontrar rapidamente as atividades que preciso acompanhar.
+
+#### AC-035 — Filtrar tarefas por responsável
+
+- **Dado** que existem tarefas de vários colaboradores no quadro
+- **Quando** seleciono o filtro "Responsável: João Silva"
+- **Então** vejo apenas as tarefas atribuídas a João Silva em todas as colunas
+
+#### AC-036 — Filtrar tarefas por categoria e prioridade
+
+- **Dado** que existem tarefas de várias categorias
+- **Quando** seleciono filtro "Categoria: Compras" e "Prioridade: Alta"
+- **Então** vejo apenas tarefas da categoria Compras com prioridade Alta
+
+#### AC-037 — Pesquisa por texto
+
+- **Dado** que existem múltiplas tarefas no sistema
+- **Quando** digito "inventário" no campo de busca
+- **Então** vejo apenas tarefas cujo título ou descrição contenham a palavra "inventário"
+
+### US-016 — Exportar relatórios
+
+Como supervisor, quero exportar relatórios de tarefas em Excel e PDF, para compartilhar informações com a gerência e fazer análises externas.
+
+#### AC-038 — Exportar para Excel
+
+- **Dado** que estou visualizando o quadro Kanban com 15 tarefas
+- **Quando** clico em "Exportar" e seleciono "Excel"
+- **Então** um arquivo .xlsx é baixado contendo todas as tarefas com colunas: Título, Responsável, Status, Prazo, Prioridade, Categoria, Data de Criação
+
+#### AC-039 — Exportar relatório em PDF
+
+- **Dado** que estou no dashboard gerencial
+- **Quando** clico em "Exportar" e seleciono "PDF"
+- **Então** um arquivo PDF é baixado contendo o resumo dos indicadores com gráficos e tabelas de produtividade
+
+### US-017 — Histórico completo de alterações (auditoria)
+
+Como supervisor, quero visualizar o histórico completo de todas as alterações feitas em uma tarefa, para rastrear quem fez o quê e quando.
+
+#### AC-040 — Exibir timeline de alterações
+
+- **Dado** que uma tarefa foi criada, depois movida para "Em Andamento", depois comentada e depois concluída
+- **Quando** abro o cartão e clico na aba "Histórico"
+- **Então** vejo uma timeline cronológica: "01/08 09:00 - João Silva criou a tarefa", "01/08 10:30 - João Silva moveu para Em Andamento", "01/08 14:00 - João Silva comentou", "01/08 16:00 - João Silva moveu para Concluído"
+
+#### AC-041 — Rastrear alterações de campos
+
+- **Dado** que o prazo de uma tarefa foi alterado de "05/08" para "03/08"
+- **Quando** visualizo o histórico
+- **Então** vejo o registro "01/08 11:00 - Maria Santos alterou prazo de 05/08/2026 para 03/08/2026"
+
+### US-018 — Notificações em tempo real
+
+Como usuário do sistema, quero receber notificações em tempo real quando tarefas são criadas para mim, comentadas, movidas ou estão atrasadas, para me manter informado sem precisar ficar atualizando a página.
+
+#### AC-042 — Notificação de nova tarefa atribuída
+
+- **Dado** que sou um Almoxarife logado
+- **Quando** um supervisor cria uma nova tarefa e me atribui como responsável
+- **Então** recebo uma notificação visual no canto superior direito: "Nova tarefa: Inventário Setor A" e um badge com contador aparece no ícone de notificações
+
+#### AC-043 — Notificação de comentário em tarefa
+
+- **Dado** que sou responsável por uma tarefa "Cotação Fornecedor"
+- **Quando** o supervisor adiciona um comentário "@João preciso do resultado até amanhã"
+- **Então** recebo notificação "Maria Santos comentou em Cotação Fornecedor" e vejo destaque na tarefa
+
+### US-019 — Tema claro e escuro
+
+Como usuário do sistema, quero alternar entre tema claro e escuro, para trabalhar com conforto visual em diferentes ambientes de iluminação.
+
+#### AC-044 — Alternar para tema escuro
+
+- **Dado** que estou usando o tema claro (padrão)
+- **Quando** clico no ícone de tema e seleciono "Escuro"
+- **Então** a interface muda para cores escuras (fundo dark, texto claro) e a preferência é salva
+
+#### AC-045 — Manter preferência de tema
+
+- **Dado** que configurei o tema escuro
+- **Quando** faço logout e login novamente
+- **Então** o sistema carrega automaticamente no tema escuro
+
+### US-020 — Categorias específicas por departamento
+
+Como supervisor, quero que o sistema tenha categorias pré-definidas (Almoxarifado, Compras, Administrativo) com subcategorias específicas, para organizar tarefas por tipo de atividade.
+
+#### AC-046 — Selecionar categoria e subcategoria ao criar tarefa
+
+- **Dado** que estou criando uma nova tarefa
+- **Quando** seleciono categoria "Almoxarifado" e depois subcategoria "Inventário"
+- **Então** a tarefa é criada com essas categorias e aparece com ícone específico de Almoxarifado no cartão
+
+#### AC-047 — Dashboard por categoria
+
+- **Dado** que existem 10 tarefas de Almoxarifado, 8 de Compras e 5 Administrativas
+- **Quando** acesso o dashboard gerencial
+- **Então** vejo um gráfico de pizza ou barras mostrando a distribuição: "Almoxarifado: 10", "Compras: 8", "Administrativo: 5"
+
+### US-021 — Solicitar apoio ou reabrir tarefa (Operacional)
+
+Como colaborador operacional, quero solicitar apoio do supervisor ou pedir reabertura de uma tarefa, para quando encontro bloqueios ou erros.
+
+#### AC-048 — Solicitar apoio em tarefa
+
+- **Dado** que estou com uma tarefa "Negociação Fornecedor X" em andamento
+- **Quando** clico em "Solicitar Apoio", escrevo "Fornecedor não responde há 3 dias" e envio
+- **Então** a tarefa recebe uma flag "Apoio Solicitado", o supervisor recebe notificação e pode visualizar a justificativa
+
+#### AC-049 — Solicitar reabertura de tarefa concluída
+
+- **Dado** que uma tarefa "Cadastro Material" foi concluída mas tem erro
+- **Quando** clico em "Solicitar Reabertura", escrevo "Código do material está errado" e envio
+- **Então** o supervisor recebe notificação de solicitação de reabertura com a justificativa e pode aprovar ou negar
+
+### US-022 — Indicadores específicos por departamento
+
+Como supervisor, quero visualizar indicadores específicos de cada departamento (Almoxarifado: inventários realizados, Compras: economia em negociações, Administrativo: relatórios gerados), para medir desempenho setorial.
+
+#### AC-050 — Indicadores de Almoxarifado no dashboard
+
+- **Dado** que foram realizados 5 inventários, 12 ajustes de estoque e 8 cadastros de materiais no mês
+- **Quando** acesso o dashboard e filtro "Departamento: Almoxarifado"
+- **Então** vejo cards com "5 Inventários Realizados", "12 Ajustes Executados" e "8 Cadastros de Materiais"
+
+#### AC-051 — Indicadores de Compras no dashboard
+
+- **Dado** que foram feitas 10 cotações com economia total de R$ 15.000 e tempo médio de compra de 3 dias
+- **Quando** acesso o dashboard e filtro "Departamento: Compras"
+- **Então** vejo cards com "10 Cotações Realizadas", "R$ 15.000 Economizados" e "3 dias Tempo Médio de Compra"
+
+### US-023 — Responsivo e mobile-friendly
+
+Como usuário do sistema, quero acessar o sistema Kanban de dispositivos móveis (tablet e celular) com interface adaptada, para acompanhar tarefas mesmo fora do escritório.
+
+#### AC-052 — Layout responsivo em tablet
+
+- **Dado** que acesso o sistema em um tablet (768px de largura)
+- **Quando** visualizo o quadro Kanban
+- **Então** as colunas se ajustam ao tamanho da tela, mantendo usabilidade com scroll horizontal suave
+
+#### AC-053 — Layout responsivo em mobile
+
+- **Dado** que acesso o sistema em um celular (375px de largura)
+- **Quando** visualizo o quadro Kanban
+- **Então** vejo um modo de visualização simplificado com colunas empilhadas verticalmente ou dropdown para selecionar coluna
+
+## Fora de escopo
+
+- Integração com sistemas externos (ERP, e-mail corporativo) nesta primeira versão
+- Campos personalizáveis de tarefa (mantém estrutura fixa definida)
+- Gamificação (pontos, badges, rankings com prêmios)
+- Chat em tempo real entre usuários
+- Gestão de múltiplos quadros Kanban (apenas 1 quadro geral da empresa)
+- Automações avançadas (mover tarefa automaticamente após X dias)
+- Recorrência de tarefas (tarefas que se repetem semanalmente/mensalmente)
+- App mobile nativo (apenas web responsivo)
+
+## Suposições
+
+| ID | Suposição | Status | Resolução |
+|---|---|---|---|
+| ASM-005 | Cada colaborador tem apenas um perfil (não pode ser Supervisor e Almoxarife ao mesmo tempo) | aberta | — |
+| ASM-006 | O sistema usará autenticação via Supabase Auth com e-mail/senha | aberta | — |
+| ASM-007 | Arquivos anexados terão limite de 10MB por arquivo | aberta | — |
+| ASM-008 | Notificações serão apenas no sistema (não via e-mail ou WhatsApp nesta versão) | aberta | — |
+| ASM-009 | O prazo das tarefas será em dias corridos (não há distinção de dias úteis vs fins de semana no cálculo automático) | aberta | — |
+| ASM-010 | Cada tarefa tem apenas 1 responsável (não há co-responsáveis) | aberta | — |
+| ASM-011 | O sistema será hospedado na Vercel com banco Supabase (PostgreSQL) | aberta | — |
+| ASM-012 | Todas as datas/horários serão exibidas no fuso horário de Brasília (America/Sao_Paulo) | aberta | — |
+
+## Perguntas em aberto
+
+| ID | Pergunta | Status | Resposta |
+|---|---|---|---|
+| Q-003 | Supervisores podem ver tarefas de todos os departamentos ou cada supervisor vê apenas seu departamento? | aberta | — |
+| Q-004 | Quantos usuários simultâneos o sistema deve suportar? | aberta | — |
+| Q-005 | As tarefas concluídas devem ser arquivadas após quantos dias? Ou ficam visíveis indefinidamente? | aberta | — |
+| Q-006 | O sistema precisa suportar anexos de imagens, PDFs e outros tipos de arquivo? Quais formatos? | aberta | — |
+| Q-007 | A prioridade "Crítica" deve ter algum comportamento especial além da cor visual (ex: notificação urgente)? | aberta | — |
+| Q-008 | Colaboradores operacionais podem mover tarefas diretamente para "Concluído" ou precisam passar por "Aguardando Aprovação"? | aberta | — |
+| Q-009 | O supervisor pode reatribuir uma tarefa em andamento para outro colaborador? | aberta | — |
+| Q-010 | Há necessidade de integração futura com sistema de ponto eletrônico ou folha de pagamento? | aberta | — |

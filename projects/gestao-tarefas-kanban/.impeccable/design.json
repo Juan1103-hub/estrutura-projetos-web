@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-02T00:00:00-03:00",
+  "title": "Design System: Gestão de Tarefas Kanban · Vórtice Mineral",
+  "extensions": {
+    "colorMeta": {
+      "amber": { "role": "primary", "displayName": "Âmbar de Segurança (Industrial)", "canonical": "oklch(0.72 0.16 51)", "tonalRamp": ["oklch(0.2 0.05 51)", "oklch(0.3 0.08 51)", "oklch(0.4 0.11 51)", "oklch(0.5 0.14 51)", "oklch(0.62 0.16 51)", "oklch(0.72 0.16 51)", "oklch(0.82 0.12 51)", "oklch(0.93 0.04 51)"] },
+      "slate-ink": { "role": "neutral", "displayName": "Ardósia Tinta", "canonical": "oklch(0.235 0.02 262)", "tonalRamp": ["oklch(0.16 0.012 262)", "oklch(0.235 0.02 262)", "oklch(0.35 0.02 262)", "oklch(0.45 0.02 262)", "oklch(0.55 0.02 262)", "oklch(0.70 0.012 262)", "oklch(0.86 0.008 262)", "oklch(0.955 0.004 262)"] },
+      "slate-surface": { "role": "neutral", "displayName": "Ardósia Superfície", "canonical": "oklch(0.968 0.004 75)", "tonalRamp": ["oklch(0.16 0.012 262)", "oklch(0.24 0.012 262)", "oklch(0.38 0.01 262)", "oklch(0.55 0.006 262)", "oklch(0.7 0.004 262)", "oklch(0.83 0.004 262)", "oklch(0.92 0.004 75)", "oklch(0.968 0.004 75)"] },
+      "teal-accent": { "role": "neutral", "displayName": "Teal Minério", "canonical": "oklch(0.55 0.09 185)", "tonalRamp": ["oklch(0.2 0.03 185)", "oklch(0.3 0.05 185)", "oklch(0.4 0.07 185)", "oklch(0.48 0.085 185)", "oklch(0.55 0.09 185)", "oklch(0.63 0.07 185)", "oklch(0.76 0.04 185)", "oklch(0.9 0.015 185)"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Título de Painel (uppercase)", "purpose": "Títulos de dashboard/página; sentence case em outros lugares." },
+      "title": { "displayName": "Título de Card", "purpose": "Título de cards e itens de lista." },
+      "body": { "displayName": "Corpo", "purpose": "Descrições, comentários, metadados." },
+      "label": { "displayName": "Label/Badge", "purpose": "Badges, metadata, indices de campo." }
+    },
+    "shadows": [
+      { "name": "hover-card", "value": "0 4px 14px rgba(0,0,0,0.10)", "purpose": "Elevação de hover apenas em cards interativos (task-card)." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "transition-all", "purpose": "Transição de estado padrão (hover/focus)." }
+    ],
+    "breakpoints": [
+      { "name": "mobile", "value": "640px", "purpose": "Quabra para nav hambúrguer e board simplificada." },
+      { "name": "tablet", "value": "768px", "purpose": "Nav lateral adapta." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Botão de ação principal (ânmbar de segurança). Altura 32px, cantos 0.5rem, hover com âmbar clareado.",
+      "html": "<button class=\"ds-btn-primary\">Nova tarefa</button>",
+      "css": ".ds-btn-primary { background: oklch(0.72 0.16 51); color: oklch(0.16 0.02 262); font-family: system-ui, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem; font-weight: 500; height: 2rem; padding: 0 0.625rem; border-radius: 0.5rem; border: 1px solid transparent; cursor: pointer; transition: background 0.15s ease; } .ds-btn-primary:hover { background: color-mix(in oklch, oklch(0.72 0.16 51), transparent 20%); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 3px oklch(0.70 0.15 51 / 0.5); border-color: oklch(0.70 0.15 51); }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Ação secundária: borda ardósia, hover preenchido superfície.",
+      "html": "<button class=\"ds-btn-outline\">Filtrar</button>",
+      "css": ".ds-btn-outline { background: oklch(0.968 0.004 75); color: oklch(0.235 0.02 262); font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; height: 2rem; padding: 0 0.625rem; border-radius: 0.5rem; border: 1px solid oklch(0.88 0.01 75); cursor: pointer; transition: background 0.15s ease; } .ds-btn-outline:hover { background: oklch(0.955 0.008 75); } .ds-btn-outline:focus-visible { outline: none; box-shadow: 0 0 0 3px oklch(0.70 0.15 51 / 0.5); }"
+    },
+    {
+      "name": "Surface Card",
+      "kind": "card",
+      "refersTo": "card-surface",
+      "description": "Container de painel: ardósia clara ligeiramente azulada, ring linearizado em vez de borda de cor.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-title\">Título da tarefa</div><div class=\"ds-card-body\">Descrição curta</div></div>",
+      "css": ".ds-card { background: oklch(0.99 0.004 75); color: oklch(0.235 0.02 262); font-family: Inter, system-ui, sans-serif; border-radius: 0.55rem; padding: 1rem; box-shadow: inset 0 0 0 1px color-mix(in oklch, oklch(0.235 0.02 262) 10%, transparent); } .ds-card-title { font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem; } .ds-card-body { font-size: 0.8125rem; color: oklch(0.55 0.02 262); }"
+    },
+    {
+      "name": "Status Badge (Atrasada)",
+      "kind": "chip",
+      "refersTo": "badge-status-overdue",
+      "description": "Pill de estado de prazo: fundo vermelho claro, texto vermelho escuro, borda vermelha.",
+      "html": "<span class=\"ds-badge-overdue\">Atrasada</span>",
+      "css": ".ds-badge-overdue { display: inline-flex; align-items: center; font-size: 0.6875rem; font-weight: 500; padding: 0 0.375rem 0 0.375rem; line-height: 1.25rem; border-radius: 9999px; background: rgb(254 226 226); color: rgb(185 28 28); border: 1px solid rgb(252 165 165); font-family: Inter, system-ui, sans-serif; height: 1.25rem; }"
+    },
+    {
+      "name": "Priority Badge Crítica",
+      "kind": "chip",
+      "refersTo": "badge-priority-critical",
+      "description": "Pillante de prioridade crítica: fundo vermelho claro, texto vermelho-bordô.",
+      "html": "<span class=\"ds-badge-critical\">Crítica</span>",
+      "css": ".ds-badge-critical { display: inline-flex; align-items: center; font-size: 0.75rem; padding: 0 0.5rem; line-height: 1.5; border-radius: 9999px; background: rgb(254 226 226); color: rgb(153 27 27); border: 1px solid rgb(254 202 202); font-family: Inter, system-ui, sans-serif; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Campo de texto padrão: borda ardósia, foco ring laranja.",
+      "html": "<input class=\"ds-input\" placeholder=\"Título ou descrição...\" />",
+      "css": ".ds-input { background: transparent; color: oklch(0.235 0.02 262); font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; height: 2rem; padding: 0 0.625rem; border-radius: 0.55rem; border: 1px solid oklch(0.88 0.01 75); transition: box-shadow 0.15s ease; } .ds-input:focus-visible { outline: none; border-color: oklch(0.70 0.15 51); box-shadow: 0 0 0 3px oklch(0.70 0.15 51 / 0.35); } .ds-input::placeholder { color: oklch(0.55 0.02 262); }"
+    },
+    {
+      "name": "Avatar Monograma",
+      "kind": "custom",
+      "refersTo": "avatar-monogram",
+      "description": "Monograma do responsável em círculo; idealmente tinta ardósaria/teal em vez de azul default.",
+      "html": "<div class=\"ds-avatar\">JS</div>",
+      "css": ".ds-avatar { display: flex; align-items: center; justify-content: center; width: 1.5rem; height: 1.5rem; border-radius: 9999px; background: oklch(0.90 0.015 185); color: oklch(0.35 0.06 185); font-size: 0.625rem; font-weight: 600; font-family: Inter, system-ui, sans-serif; }"
+    },
+    {
+      "name": "Task Card",
+      "kind": "custom",
+      "refersTo": "task-card",
+      "description": "Card de tarefa do Kanban: título + badge prioridade em pill, badge categoria, checklist com progresso, prazo com indicador, footer responsável+contadores.",
+      "html": "<div class=\"ds-task-card\"><div class=\"ds-task-head\"><strong class=\"ds-task-title\">Ajuste de Saldo - Material ABC</strong><span class=\"ds-pill-crit\">Crítica</span></div><div class=\"ds-task-cat\">Inventário</div><div class=\"ds-task-due ds-due-warn\">há 2h vence</div><div class=\"ds-task-foot\"><span class=\"ds-avatar\">JS</span><span class=\"ds-txtmuted\">João</span><span class=\"ds-tools\">💬 3 · 📎 1</span></div></div>",
+      "css": ".ds-task-card { background: oklch(0.99 0.004 75); border-radius: 0.55rem; padding: 1rem; box-shadow: inset 0 0 0 1px color-mix(in oklch, oklch(0.235 0.02 262) 10%, transparent); font-family: Inter, system-ui, sans-serif; } .ds-task-head { display: flex; justify-content: space-between; gap: 0.5rem; } .ds-task-title { font-size: 0.875rem; font-weight: 500; line-height: 1.3; } .ds-pill-crit { font-size: 0.75rem; padding: 0 0.5rem; border-radius: 9999px; background: rgb(254 226 226); color: rgb(153 27 27); border: 1px solid rgb(254 202 202); height: 1.5rem; display: inline-flex; align-items: center; } .ds-task-meta { font-size: 0.75rem; margin-top: 0.25rem; color: oklch(0.55 0.02 262); } .ds-due-warn { color: rgb(194 65 12); font-weight: 500; } .ds-task-foot { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid oklch(0.88 0.01 75); margin-top: 0.75rem; padding-top: 0.75rem; } .ds-avatar { display: inline-flex; align-items: center; justify-content: center; width: 1.5rem; height: 1.5rem; border-radius: 9999px; background: oklch(0.90 0.015 185); color: oklch(0.35 0.06 185); font-size: 0.625rem; font-weight: 600; } .ds-toolsmuted { color: oklch(0.55 0.02 262); font-size: 0.75rem; } .ds-tools { display: flex; gap: 0.75rem; color: oklch(0.55 0.02 262); font-size: 0.75rem; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Sala de Controle Industrial",
+    "overview": "Painel de operação de mineração: sério e legível sob claridade/planta, mas com caráter próprio — nunca azul SaaS genérico. As metáforas vêm do chão de fábrica: ardósia rochosa, metal polido, e o laranja âmbar de segurança como a única cor de energia. Densidade proposital com primário raro; conteúdo fala por peso e contraste, não saturação.",
+    "keyCharacteristics": ["Âmbar de segurança como energia; ardósia como tinta e canvas.", "Tipografia sistema (Segoe UI/Roboto); títulos uppercase+tracking no painel.", "Cards de painel com ring 1px, nunca card fantasia.", "Radar de prazos: âmbar=vence em breve, vermelho=atrasada.", "Dark ardósia profunda com o mesmo âmbar, mais vivo."],
+    "rules": [
+      { "name": "The Amber Scarcity Rule", "body": "O âmbar é usado em ≤~10% de qualquer tela. Sua raridade É a hierarquia.", "section": "colors" },
+      { "name": "The One Hue Slate Rule", "body": "Azul de terceiros (bg-blue-500/100) é ruído fora da paleta; substituir por ardósia/teal/âmbar do token.", "section": "colors" }
+    ],
+    "dos": [
+      "Use --primary (âmbar) só em ações/marca; rar é a hierarquia.",
+      "Use uppercase+tracking só em títulos de painel/dashboard; corpo em sentence case.",
+      "Dê feedback de prazo com cor: âmbar 'vence em breve', vermelho 'atrasada'.",
+      "Use sombra só em hover de interativos; profundidade = tonal+ring em repouso.",
+      "Mantenha badges de estado como pills (bg-*100) + borda contrastada."
+    ],
+    "donts": [
+      "Não use cores hard-coded fora da paleta (bg-blue-500 de progresso, bg-blue-100 de avatar/prioridade).",
+      "Não aplique âmbar como preenchimento generalizado.",
+      "Não fuja da família --radius (industrial controlado).",
+      "Não iguale a hierarquia de título de card e de página."
+    ]
+  }
+}
