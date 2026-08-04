@@ -16,8 +16,8 @@ export default async function ProfilePage() {
     <div className="min-h-screen bg-muted/30">
       <div className="mx-auto max-w-2xl px-4 py-8">
         <div className="mb-6">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/kanban" className="gap-1">
+          <Button variant="ghost" size="sm" className="p-0">
+            <Link href="/kanban" className="inline-flex items-center gap-1 px-3 py-2">
               <ArrowLeft className="h-4 w-4" />
               Voltar ao quadro
             </Link>
