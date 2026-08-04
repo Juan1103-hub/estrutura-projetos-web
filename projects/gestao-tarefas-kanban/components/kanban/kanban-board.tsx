@@ -36,6 +36,16 @@ import { visibleTasks, canModifyTask, can, ROLE_LABELS } from '@/lib/auth/roles'
 import { LogOut, Plus, Users, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { ExportButton } from '@/components/export/export-button';
 import { useResponsive } from '@/hooks/use-responsive';
 import { Logo } from '@/components/brand/logo';
@@ -68,6 +78,8 @@ export function KanbanBoard() {
   // Usuário logado (modo demo). Se ninguém logou, assume supervisor para
   // a demonstração não ficar bloqueada.
   const [currentUser, setCurrentUser] = useState(() => getStoredUser());
+  const [logoutOpen, setLogoutOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   // `mounted` evita mismatch de hydration: no servidor o `sessionUser` é o
   // fallback (sem localStorage), mas no client vem do localStorage. Enquanto
   // não montar, usamos o mesmo fallback para renderizar identicamente.
@@ -77,16 +89,31 @@ export function KanbanBoard() {
     currentUser ?? { id: 'demo-sup', name: 'Maria Santos', role: 'supervisor', roleLabel: 'Supervisor', email: 'supervisor@vortice.com' };
   // Durante a hidratação (não montado), exibe como supervisor neutro para que
   // servidor e client renderizem o MESMO header. Após o mount, usa o usuário real.
-  const displayUser = mounted ? sessionUser : { id: 'demo-sup', name: 'Carregando...', role: 'supervisor' as const, roleLabel: 'Supervisor', email: 'supervisor@vortice.com' };
+  // `loggingOut` segura o re-render do header com o fallback ("flash de outro
+  // login") enquanto a navegação para /login não completa.
+  const displayUser =
+    loggingOut
+      ? { id: 'demo-sup', name: 'Saindo...', role: 'supervisor' as const, roleLabel: '', email: '' }
+      : mounted
+        ? sessionUser
+        : { id: 'demo-sup', name: 'Carregando...', role: 'supervisor' as const, roleLabel: 'Supervisor', email: 'supervisor@vortice.com' };
 
-  const handleLogout = () => {
+  // Só desloga após confirmação (AC: "deseja sair?"). Evita saída acidental.
+  const handleLogout = async () => {
     if (typeof window !== 'undefined') {
       window.localStorage.removeItem('kanban_session_user');
-      // Remove o cookie httpOnly (sessão do servidor).
-      void logout();
+      // Remove o cookie httpOnly (sessão do servidor) — aguarda terminar para
+      // o middleware não redirecionar de volta enquanto navega.
+      await logout();
     }
-    setCurrentUser(null);
+    setLogoutOpen(false);
+    setLoggingOut(false);
+    // Navega ANTES de limpar o estado: se setCurrentUser(null) rodasse aqui,
+    // o header cairia no fallback "Maria Santos" por um instante (flash de
+    // outro login). Com a navegação já em andamento, o board não re-renderiza
+    // com o usuário errado.
     router.push('/login');
+    setCurrentUser(null);
   };
 
   const sensors = useSensors(
@@ -275,7 +302,7 @@ export function KanbanBoard() {
               <p className="text-xs font-semibold">{displayUser.name}</p>
               <p className="text-[10px] text-muted-foreground">{displayUser.roleLabel}</p>
             </div>
-            <Button variant="ghost" size="icon" aria-label="Sair" onClick={handleLogout} className="h-6 w-6">
+            <Button variant="ghost" size="icon" aria-label="Sair" onClick={() => setLogoutOpen(true)} className="h-6 w-6">
               <LogOut className="h-4 w-4" />
             </Button>
           </div>
@@ -363,6 +390,31 @@ export function KanbanBoard() {
         onCreated={handleTaskCreated}
         requester={{ id: sessionUser.id, name: sessionUser.name }}
       />
+
+      {/* Confirmação de saída — evita logout acidental */}
+      <AlertDialog open={logoutOpen} onOpenChange={(isOpen) => !isOpen && setLogoutOpen(false)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Deseja sair?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Você será desconectado do sistema. Tem certeza que deseja continuar?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={loggingOut}>Não, ficar aqui</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={loggingOut}
+              onClick={() => {
+                setLoggingOut(true);
+                handleLogout();
+              }}
+            >
+              {loggingOut ? "Saindo..." : "Sim, sair"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DndContext>
   );
 }

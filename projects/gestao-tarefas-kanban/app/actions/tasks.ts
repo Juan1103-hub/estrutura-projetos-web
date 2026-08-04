@@ -10,7 +10,9 @@ import {
   TaskPriority,
   TaskCategory,
   ChecklistItem,
+  TASK_STATUS_LABELS,
 } from "@/types/task";
+import { notifyTaskStakeholders } from "@/lib/notifications/task-events";
 
 const TASK_PRIORITIES = new Set<TaskPriority>(["baixa", "media", "alta", "critica"]);
 const TASK_CATEGORIES: TaskCategory[] = [
@@ -245,7 +247,40 @@ export async function updateTask(input: {
   }
   // Autorização real: usuário logado. Em produção o gate seria por
   // canModifyTask(role, task, actor.id) — aqui qualquer logado atualiza.
-  await requireActor("tasks.edit");
+  const actor = await requireActor("tasks.edit");
+
+  // Caminho real: Supabase. Persiste a mudança e notifica os envolvidos.
+  if (isSupabaseConfigured()) {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("tasks")
+      .update({
+        ...(input.title !== undefined ? { title: input.title.trim() } : {}),
+        ...(input.description !== undefined ? { description: input.description } : {}),
+        ...(input.priority !== undefined ? { priority: asPriority(input.priority) } : {}),
+        ...(input.status !== undefined ? { status: asStatus(input.status, "a_fazer") } : {}),
+        ...(input.dueDate !== undefined ? { due_date: input.dueDate } : {}),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", input.id)
+      .select("*, responsible:users!tasks_responsible_id_fkey(*), requester:users!tasks_requester_id_fkey(*)")
+      .single();
+    if (error) return { ok: false, error: error.message };
+    const updated = data as unknown as TaskWithRelations;
+
+    // Notifica os envolvidos quando o status muda (movimentou no board).
+    if (input.status !== undefined) {
+      await notifyTaskStakeholders({
+        taskId: input.id,
+        type: "status",
+        title: "Tarefa movida",
+        message: `"${updated.title}" mudou para ${TASK_STATUS_LABELS[updated.status] ?? updated.status}`,
+        excludeUserId: actor.id,
+      });
+    }
+    return { ok: true, task: updated };
+  }
+
   const byId = readSession();
   let existing = byId[input.id];
   // A tarefa pode ser um mock (drag-and-drop persiste também nos dados de

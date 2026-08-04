@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { requireActor } from "@/lib/auth/server-session";
 import { CommentWithUser } from "@/types/comment";
+import { notifyTaskStakeholders } from "@/lib/notifications/task-events";
 
 /**
  * T-011 — Comentários.
@@ -99,7 +100,18 @@ export async function addComment(input: {
 
     if (error) throw new Error(error.message);
     const comment = data as unknown as CommentWithUser;
-    // TODO T-015 onp: emitir notificação ao supervisor (Realtime).
+
+    // Notifica os envolvidos na tarefa (responsável + solicitante) sobre o
+    // comentário — chega no sino deles via Realtime. O autor não se notifica.
+    const taskTitle = await getTaskTitle(input.taskId);
+    await notifyTaskStakeholders({
+      taskId: input.taskId,
+      type: "comment",
+      title: `${actor.name} comentou`,
+      message: `${actor.name} comentou em ${taskTitle ?? "sua tarefa"}`,
+      excludeUserId: actor.id,
+    });
+
     return comment;
   }
 
@@ -135,4 +147,15 @@ export async function addComment(input: {
       avatar_url: null,
     },
   };
+}
+
+/** Busca o título de uma tarefa (para compor a mensagem da notificação). */
+async function getTaskTitle(taskId: string): Promise<string | null> {
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase.from("tasks").select("title").eq("id", taskId).single();
+    return data?.title ?? null;
+  } catch {
+    return null;
+  }
 }

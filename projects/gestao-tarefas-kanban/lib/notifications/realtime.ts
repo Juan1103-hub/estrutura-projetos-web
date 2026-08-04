@@ -30,8 +30,29 @@ let seq = 0;
 /** Fila em memória (sessão). */
 const queue: AppNotification[] = [];
 
-/** Monta uma notificação nova no topo da fila. */
+/**
+ * Tipos que deduplicam: alertas de prazo repetem a cada ciclo de 60s e não
+ * devem empilhar. Comentários/aprovações são eventos únicos — sempre geram
+ * uma entrada nova (dois comentários seguidos são duas notificações).
+ */
+const DEDUP_TYPES: NotificationType[] = ["deadline"];
+
+/**
+ * Monta uma notificação nova no topo da fila.
+ *
+ * Para tipos que deduplicam (ex: deadline), se já existir uma notificação
+ * NÃO-LIDA com a mesma chave (tipo+tarefa), reusa a entrada existente
+ * (atualiza o timestamp) em vez de criar outra — evita a "chuva" de
+ * notificações repetidas a cada ciclo de 60s.
+ */
 export function pushNotification(input: Omit<AppNotification, "id" | "createdAt" | "read">): AppNotification {
+  if (DEDUP_TYPES.includes(input.type)) {
+    const existing = queue.find((n) => n.type === input.type && n.taskId === input.taskId && !n.read);
+    if (existing) {
+      existing.createdAt = new Date().toISOString();
+      return existing;
+    }
+  }
   seq += 1;
   const n: AppNotification = {
     ...input,
@@ -41,6 +62,22 @@ export function pushNotification(input: Omit<AppNotification, "id" | "createdAt"
   };
   queue.unshift(n);
   return n;
+}
+
+/**
+ * Versão deduplicada dos alertas de prazo: em vez de sempre criar notificações
+ * (o que empilhava duplicatas a cada ciclo de 60s), só cria/atualiza quando o
+ * estado mudou. Mantém o limite de uma notificação de prazo por tarefa.
+ */
+export function deadlineNotifications(tasks: TaskWithRelations[], now = Date.now()): AppNotification[] {
+  return collectDeadlineAlerts(tasks, now).map((a) =>
+    pushNotification({
+      type: "deadline",
+      title: a.status === "atrasada" ? "Tarefa atrasada" : "Vence em breve",
+      body: a.message,
+      taskId: a.task.id,
+    })
+  );
 }
 
 /** Lê a fila (mais recente primeiro). */
@@ -87,16 +124,4 @@ export function newTaskNotification(input: {
     body: `Nova tarefa: ${input.taskTitle}`,
     taskId: input.taskId,
   });
-}
-
-/** Gera os alertas de prazo (AC-030/031) como notificações. */
-export function deadlineNotifications(tasks: TaskWithRelations[], now = Date.now()): AppNotification[] {
-  return collectDeadlineAlerts(tasks, now).map((a) =>
-    pushNotification({
-      type: "deadline",
-      title: a.status === "atrasada" ? "Tarefa atrasada" : "Vence em breve",
-      body: a.message,
-      taskId: a.task.id,
-    })
-  );
 }
