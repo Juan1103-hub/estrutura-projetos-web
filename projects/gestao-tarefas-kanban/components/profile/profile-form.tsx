@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "../ui/alert";
 import { updateProfile, updatePassword, uploadAvatar, type ProfileData } from "@/app/actions/profile";
 import { User, Lock, Upload, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import Image from "next/image";
