@@ -33,6 +33,12 @@ import {
   deleteTask,
   getSessionTasks,
 } from '../projects/gestao-tarefas-kanban/app/actions/tasks';
+import {
+  listUsers as listManagedUsers,
+  createUser as createManagedUser,
+  updateUserRole as updateManagedUserRole,
+  deleteUser as deleteManagedUser,
+} from '../projects/gestao-tarefas-kanban/app/actions/users';
 import { authenticate } from '../projects/gestao-tarefas-kanban/lib/auth/session';
 import {
   can,
@@ -780,4 +786,79 @@ test('AC-053: Layout responsivo em mobile @spec:AC-053', () => {
   expect(viewModeForWidth(375)).toBe('mobile');
   expect(shouldStackColumns(375)).toBe(true);
   expect(viewModeForWidth(767)).toBe('mobile');
+});
+
+// US-024 — Gestão de usuários (Supervisor)
+test('AC-054: Listar usuários do sistema @spec:AC-054', async () => {
+  // Dado: que sou um supervisor logado
+  // Quando: acesso a tela de usuários
+  // Então: vejo a lista de colaboradores cadastrados
+  const result = await listManagedUsers();
+  expect(result.ok).toBe(true);
+  expect(Array.isArray(result.users)).toBe(true);
+  expect(result.users.length).toBeGreaterThan(0);
+  expect(result.users[0]).toHaveProperty('full_name');
+  expect(result.users[0]).toHaveProperty('role');
+});
+
+test('AC-055: Criar usuário real @spec:AC-055', async () => {
+  // Dado: que sou um supervisor logado
+  // Quando: preencho nome, e-mail, senha e perfil e clico em "Criar Usuário"
+  const result = await createManagedUser({
+    email: 'pedro@vortice.com',
+    password: 'segredo123',
+    fullName: 'Pedro Almeida',
+    role: 'almoxarife',
+  });
+  // Então: o usuário é criado com o perfil atribuído
+  expect(result.ok).toBe(true);
+  expect(result.user?.email).toBe('pedro@vortice.com');
+  expect(result.user?.full_name).toBe('Pedro Almeida');
+  expect(result.user?.role).toBe('almoxarife');
+  expect(result.user?.roleLabel).toBe('Almoxarife');
+});
+
+test('AC-055b: Criar usuário com e-mail inválido é bloqueado @spec:AC-055', async () => {
+  const result = await createManagedUser({
+    email: 'email-sem-arroba',
+    password: 'segredo123',
+    fullName: 'Teste Inválido',
+    role: 'comprador',
+  });
+  expect(result.ok).toBe(false);
+  expect(result.error).toBe('E-mail inválido');
+});
+
+test('AC-056: Alterar perfil de usuário @spec:AC-056', async () => {
+  // Dado: que existe um usuário "Pedro Almeida" com perfil Almoxarife
+  const created = await createManagedUser({
+    email: 'carla@vortice.com',
+    password: 'segredo123',
+    fullName: 'Carla Souza',
+    role: 'comprador',
+  });
+  expect(created.ok).toBe(true);
+  // Quando: o supervisor altera o perfil para Supervisor
+  const updated = await updateManagedUserRole({ id: created.user.id, role: 'supervisor' });
+  // Então: o perfil é atualizado
+  expect(updated.ok).toBe(true);
+  expect(updated.user?.role).toBe('supervisor');
+  expect(updated.user?.roleLabel).toBe('Supervisor');
+});
+
+test('AC-057: Excluir usuário @spec:AC-057', async () => {
+  // Dado: que existe um usuário "Carla Souza"
+  const created = await createManagedUser({
+    email: 'diego@vortice.com',
+    password: 'segredo123',
+    fullName: 'Diego Lima',
+    role: 'almoxarife',
+  });
+  expect(created.ok).toBe(true);
+  // Quando: o supervisor exclui o usuário
+  const del = await deleteManagedUser({ id: created.user.id });
+  // Então: o usuário some da lista
+  expect(del.ok).toBe(true);
+  const after = await listManagedUsers();
+  expect(after.users.some((u) => u.id === created.user.id)).toBe(false);
 });

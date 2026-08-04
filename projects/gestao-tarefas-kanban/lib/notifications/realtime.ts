@@ -52,6 +52,12 @@ export function markAllRead(): void {
   queue.forEach((n) => (n.read = true));
 }
 
+/** Marca uma notificação específica como lida (por id). */
+export function markAsRead(id: string): void {
+  const n = queue.find((n) => n.id === id);
+  if (n) n.read = true;
+}
+
 export function countUnread(notifications: AppNotification[] = queue): number {
   return notifications.filter((n) => !n.read).length;
 }

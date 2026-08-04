@@ -12,10 +12,13 @@ import {
   AppNotification,
   countUnread,
   markAllRead,
-  getNotifications,
+  markAsRead,
 } from "@/lib/notifications/realtime";
+import { markNotificationRead, markAllNotificationsRead } from "@/app/actions/notifications";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useRouter } from "next/navigation";
+import { CheckCheck } from "lucide-react";
 
 /**
  * T-015 — Sino de notificações (AC-042/043).
@@ -36,12 +39,22 @@ const TYPE_ICONS: Record<AppNotification["type"], typeof Bell> = {
 
 export function NotificationBell({ notifications }: { notifications: AppNotification[] }) {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
   const unread = countUnread(notifications);
 
   const handleOpen = () => {
     setOpen((v) => !v);
-    if (!open && unread > 0) {
-      markAllRead();
+  };
+
+  const handleNotificationClick = async (n: AppNotification) => {
+    // Marca como lida (local + banco)
+    markAsRead(n.id);
+    await markNotificationRead(n.id).catch(() => {});
+
+    // Navega para a tarefa se houver taskId
+    if (n.taskId) {
+      router.push(`/kanban?task=${n.taskId}`);
+      setOpen(false);
     }
   };
 

@@ -32,11 +32,19 @@ export type Permission =
   | "tasks.edit"
   | "tasks.delete"
   | "tasks.approve"
-  | "tasks.view_all";
+  | "tasks.view_all"
+  | "users.manage";
 
 /** Permissões globais por perfil. */
 const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
-  supervisor: ["tasks.create", "tasks.edit", "tasks.delete", "tasks.approve", "tasks.view_all"],
+  supervisor: [
+    "tasks.create",
+    "tasks.edit",
+    "tasks.delete",
+    "tasks.approve",
+    "tasks.view_all",
+    "users.manage",
+  ],
   almoxarife: [],
   comprador: [],
   assistente_administrativo: [],

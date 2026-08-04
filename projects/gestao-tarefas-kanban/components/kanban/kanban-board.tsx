@@ -33,8 +33,9 @@ import { useNotifications } from '@/hooks/use-notifications';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
 import { getStoredUser } from '@/components/auth/login-form';
 import { visibleTasks, canModifyTask, can, ROLE_LABELS } from '@/lib/auth/roles';
-import { LogOut, Plus } from 'lucide-react';
+import { LogOut, Plus, Users, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { ExportButton } from '@/components/export/export-button';
 import { useResponsive } from '@/hooks/use-responsive';
 import { Logo } from '@/components/brand/logo';
@@ -67,8 +68,16 @@ export function KanbanBoard() {
   // Usuário logado (modo demo). Se ninguém logou, assume supervisor para
   // a demonstração não ficar bloqueada.
   const [currentUser, setCurrentUser] = useState(() => getStoredUser());
+  // `mounted` evita mismatch de hydration: no servidor o `sessionUser` é o
+  // fallback (sem localStorage), mas no client vem do localStorage. Enquanto
+  // não montar, usamos o mesmo fallback para renderizar identicamente.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const sessionUser =
     currentUser ?? { id: 'demo-sup', name: 'Maria Santos', role: 'supervisor', roleLabel: 'Supervisor', email: 'supervisor@vortice.com' };
+  // Durante a hidratação (não montado), exibe como supervisor neutro para que
+  // servidor e client renderizem o MESMO header. Após o mount, usa o usuário real.
+  const displayUser = mounted ? sessionUser : { id: 'demo-sup', name: 'Carregando...', role: 'supervisor' as const, roleLabel: 'Supervisor', email: 'supervisor@vortice.com' };
 
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
@@ -197,7 +206,9 @@ export function KanbanBoard() {
   };
 
   // Tarefas visíveis considerando RBAC (AC-014: operacional vê as próprias) e filtros.
-  const rbacTasks = visibleTasks(sessionUser.role, tasks, sessionUser.id);
+  // Usa displayUser (idêntico no server e client durante a hidratação) para que
+  // os contadores das colunas não mudem entre render do servidor e do client.
+  const rbacTasks = visibleTasks(displayUser.role, tasks, displayUser.id);
   const filteredTasks = filterTasks(rbacTasks, filters);
   const activeFilterCount = [
     filters.responsibleId,
@@ -229,7 +240,7 @@ export function KanbanBoard() {
               Gestão de tarefas — Almoxarifado, Compras e Administrativo
             </p>
           </div>
-          {can(sessionUser.role, 'tasks.create') && (
+          {can(displayUser.role, 'tasks.create') && (
             <Button
               onClick={() => setCreateOpen(true)}
               className="gap-1.5"
@@ -238,15 +249,26 @@ export function KanbanBoard() {
               Nova Tarefa
             </Button>
           )}
+          {can(displayUser.role, 'users.manage') && (
+            <Button variant="outline" className="gap-1.5" onClick={() => router.push('/usuarios')}>
+              <Users className="h-4 w-4" />
+              Usuários
+            </Button>
+          )}
           <ThemeToggle />
           <NotificationBell notifications={notifications} />
-          {can(sessionUser.role, 'tasks.view_all') && (
+          {can(displayUser.role, 'tasks.view_all') && (
             <ExportButton tasks={filteredTasks} />
           )}
+          <Link href="/perfil" className="hover:opacity-80">
+            <Button variant="ghost" size="icon" aria-label="Meu perfil" className="h-6 w-6">
+              <User className="h-4 w-4" />
+            </Button>
+          </Link>
           <div className="flex items-center gap-2 rounded-lg border border-border/60 bg-muted/40 px-3 py-1.5">
             <div className="text-right leading-tight">
-              <p className="text-xs font-semibold">{sessionUser.name}</p>
-              <p className="text-[10px] text-muted-foreground">{sessionUser.roleLabel}</p>
+              <p className="text-xs font-semibold">{displayUser.name}</p>
+              <p className="text-[10px] text-muted-foreground">{displayUser.roleLabel}</p>
             </div>
             <Button variant="ghost" size="icon" aria-label="Sair" onClick={handleLogout} className="h-6 w-6">
               <LogOut className="h-4 w-4" />

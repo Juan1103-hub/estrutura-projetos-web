@@ -33,7 +33,8 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "cwd": "projects/gestao-tarefas-kanban",
-      "port": 3004
+      "port": 3004,
+      "autoPort": true
     }
   ]
 }

@@ -7,25 +7,70 @@ import {
   AppNotification,
   commentNotification,
   deadlineNotifications,
-  newTaskNotification,
   getNotifications,
+  pushNotification,
 } from "@/lib/notifications/realtime";
+import { subscribeNotifications, getBrowserClient } from "@/lib/supabase/realtime";
+import { fetchUnreadNotifications } from "@/app/actions/notifications";
+import { getStoredUser } from "@/components/auth/login-form";
 
 /**
- * T-015 — Hook que "escuta" os eventos de tempo real do app e alimenta o sino.
+ * Hook híbrido de notificações (T-015).
  *
- * No modo demo, os eventos já existentes (`kanban:comment`, `kanban:approval`)
- * são capturados no window e convertidos em notificações na fila. Alertas de
- * prazo (vencimento/atraso) são computados dos prazos das tarefas.
+ * Combina 2 fontes:
+ * 1. **Supabase Realtime** — escuta o canal `notifications` (se configurado)
+ *    e recebe novas notificações em tempo real do banco.
+ * 2. **Eventos locais** — fallback para demo/SSR (kanban:comment, kanban:new-task).
  *
- * Em produção, o `escuta` viraria uma subscription ao Supabase Realtime nas
- * tabelas `notifications`/`tasks`.
+ * No mount, busca as notificações não-lidas do banco para popular o sino.
  */
 export function useNotifications() {
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
 
   useEffect(() => {
-    // Seed: alertas de prazo das tarefas pendentes (AC-030/031).
+    let channel: ReturnType<typeof subscribeNotifications> | null = null;
+
+    // 1. Seed inicial: busca notificações não-lidas do Supabase
+    const loadUnread = async () => {
+      const unread = await fetchUnreadNotifications();
+      if (unread.length > 0) {
+        unread.forEach(pushNotification);
+        setNotifications(getNotifications());
+      }
+    };
+    loadUnread();
+
+    // 2. Realtime: inscreve-se no canal de notificações (se Supabase estiver configurado)
+    const user = getStoredUser();
+    const supabase = getBrowserClient();
+    if (user && supabase) {
+      channel = subscribeNotifications(
+        user.id,
+        (payload) => {
+          // Nova notificação chegou pelo Realtime
+          const notification: AppNotification = {
+            id: payload.id,
+            type: payload.type as AppNotification["type"],
+            title: payload.title,
+            body: payload.message,
+            createdAt: payload.created_at,
+            read: payload.read,
+            taskId: payload.task_id || undefined,
+          };
+          pushNotification(notification);
+          setNotifications(getNotifications());
+
+          // Dispara evento local para compatibilidade com outros listeners
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(
+              new CustomEvent("kanban:notification", { detail: notification })
+            );
+          }
+        }
+      );
+    }
+
+    // 3. Deadlines locais: recalcula prazos das tarefas a cada 60s
     const seedDeadlines = () => {
       getSessionTasks().then((sessionTasks) => {
         deadlineNotifications([...mockTasks, ...sessionTasks]);
@@ -33,13 +78,11 @@ export function useNotifications() {
       });
     };
     seedDeadlines();
-    // Re-checa prazos periodicamente para "Vence em breve" virar "Atrasada"
-    // sem interação (AC-030/031). Eventos de comentário/aprovação continuam
-    // atualizando a fila em tempo real.
     const deadlineTimer = window.setInterval(seedDeadlines, 60_000);
+
+    // 4. Eventos locais (fallback/demo)
     const sync = () => setNotifications(getNotifications());
 
-    // Comentário em tarefa → notificação (AC-043)
     const onComment = (e: Event) => {
       const detail = (e as CustomEvent).detail ?? {};
       commentNotification({
@@ -50,40 +93,29 @@ export function useNotifications() {
       sync();
     };
 
-    // Nova tarefa atribuída (AC-042) — notifica no demo.
     const onNewTask = (e: Event) => {
       const detail = (e as CustomEvent).detail ?? {};
       if (detail.taskTitle) {
-        newTaskNotification({
+        commentNotification({
           taskId: detail.taskId,
           taskTitle: detail.taskTitle,
+          author: "Sistema",
         });
         sync();
       }
     };
 
-    const onApproval = (e: Event) => {
-      const detail = (e as CustomEvent).detail ?? {};
-      commentNotification({
-        taskId: detail.taskId,
-        taskTitle: detail.taskTitle ?? "tarefa",
-        author: detail.action === "approved" ? "Supervisor" : "Supervisor",
-      });
-      sync();
-    };
-
     window.addEventListener("kanban:comment", onComment);
-    window.addEventListener("kanban:approval", onApproval);
     window.addEventListener("kanban:new-task", onNewTask);
 
     return () => {
       window.clearInterval(deadlineTimer);
       window.removeEventListener("kanban:comment", onComment);
-      window.removeEventListener("kanban:approval", onApproval);
       window.removeEventListener("kanban:new-task", onNewTask);
+      if (channel) {
+        supabase?.removeChannel(channel);
+      }
     };
-    // Intencional: roda uma vez ao montar.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return notifications;

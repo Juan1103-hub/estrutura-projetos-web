@@ -47,6 +47,9 @@ CREATE TABLE tasks (
   title TEXT NOT NULL,
   description TEXT,
   responsible_id UUID NOT NULL REFERENCES users(id),
+  -- Responsáveis adicionais (tarefa compartilhada entre várias pessoas).
+  -- O responsável principal fica em responsible_id; os demais entram aqui.
+  responsible_ids UUID[] DEFAULT '{}',
   requester_id UUID NOT NULL REFERENCES users(id),
   status task_status NOT NULL DEFAULT 'a_fazer',
   priority task_priority NOT NULL DEFAULT 'media',
@@ -63,6 +66,9 @@ CREATE TABLE tasks (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Índice GIN para buscas de responsabilidade (inclui multi-responsáveis).
+CREATE INDEX idx_tasks_responsible_ids ON tasks USING GIN (responsible_ids);
 
 -- Checklist items table
 CREATE TABLE checklist_items (
@@ -215,6 +221,19 @@ CREATE POLICY "Users can view all users" ON users
 CREATE POLICY "Users can update own profile" ON users
   FOR UPDATE USING (auth.uid() = id);
 
+-- Helper: o usuário logado participa da tarefa (responsável principal,
+-- responsável adicional, ou solicitante).
+CREATE OR REPLACE FUNCTION task_visible_to(task_id uuid, uid uuid)
+RETURNS boolean AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM tasks t
+    WHERE t.id = task_id
+      AND (t.responsible_id = uid
+        OR t.requester_id = uid
+        OR uid = ANY(t.responsible_ids))
+  );
+$$ LANGUAGE sql STABLE;
+
 -- Tasks policies
 CREATE POLICY "Supervisors can view all tasks" ON tasks
   FOR SELECT USING (
@@ -227,7 +246,7 @@ CREATE POLICY "Supervisors can view all tasks" ON tasks
 
 CREATE POLICY "Users can view their assigned tasks" ON tasks
   FOR SELECT USING (
-    responsible_id = auth.uid() OR requester_id = auth.uid()
+    task_visible_to(id, auth.uid())
   );
 
 CREATE POLICY "Supervisors can create tasks" ON tasks
@@ -249,7 +268,9 @@ CREATE POLICY "Supervisors can update all tasks" ON tasks
   );
 
 CREATE POLICY "Users can update their assigned tasks" ON tasks
-  FOR UPDATE USING (responsible_id = auth.uid());
+  FOR UPDATE USING (
+    responsible_id = auth.uid() OR auth.uid() = ANY(responsible_ids)
+  );
 
 CREATE POLICY "Supervisors can delete tasks" ON tasks
   FOR DELETE USING (
@@ -263,11 +284,7 @@ CREATE POLICY "Supervisors can delete tasks" ON tasks
 -- Checklist items policies
 CREATE POLICY "Users can view checklist items for their tasks" ON checklist_items
   FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM tasks
-      WHERE tasks.id = checklist_items.task_id
-      AND (tasks.responsible_id = auth.uid() OR tasks.requester_id = auth.uid())
-    )
+    task_visible_to(checklist_items.task_id, auth.uid())
     OR
     EXISTS (
       SELECT 1 FROM users
@@ -278,27 +295,13 @@ CREATE POLICY "Users can view checklist items for their tasks" ON checklist_item
 
 CREATE POLICY "Users can manage checklist items for their tasks" ON checklist_items
   FOR ALL USING (
-    EXISTS (
-      SELECT 1 FROM tasks
-      WHERE tasks.id = checklist_items.task_id
-      AND tasks.responsible_id = auth.uid()
-    )
-    OR
-    EXISTS (
-      SELECT 1 FROM users
-      WHERE users.id = auth.uid()
-      AND users.role = 'supervisor'
-    )
+    task_visible_to(checklist_items.task_id, auth.uid())
   );
 
 -- Comments policies
 CREATE POLICY "Users can view comments on their tasks" ON comments
   FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM tasks
-      WHERE tasks.id = comments.task_id
-      AND (tasks.responsible_id = auth.uid() OR tasks.requester_id = auth.uid())
-    )
+    task_visible_to(comments.task_id, auth.uid())
     OR
     EXISTS (
       SELECT 1 FROM users
@@ -310,21 +313,13 @@ CREATE POLICY "Users can view comments on their tasks" ON comments
 CREATE POLICY "Users can create comments on their tasks" ON comments
   FOR INSERT WITH CHECK (
     user_id = auth.uid()
-    AND EXISTS (
-      SELECT 1 FROM tasks
-      WHERE tasks.id = comments.task_id
-      AND (tasks.responsible_id = auth.uid() OR tasks.requester_id = auth.uid())
-    )
+    AND task_visible_to(comments.task_id, auth.uid())
   );
 
 -- Attachments policies
 CREATE POLICY "Users can view attachments on their tasks" ON attachments
   FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM tasks
-      WHERE tasks.id = attachments.task_id
-      AND (tasks.responsible_id = auth.uid() OR tasks.requester_id = auth.uid())
-    )
+    task_visible_to(attachments.task_id, auth.uid())
     OR
     EXISTS (
       SELECT 1 FROM users
@@ -336,21 +331,13 @@ CREATE POLICY "Users can view attachments on their tasks" ON attachments
 CREATE POLICY "Users can upload attachments to their tasks" ON attachments
   FOR INSERT WITH CHECK (
     user_id = auth.uid()
-    AND EXISTS (
-      SELECT 1 FROM tasks
-      WHERE tasks.id = attachments.task_id
-      AND (tasks.responsible_id = auth.uid() OR tasks.requester_id = auth.uid())
-    )
+    AND task_visible_to(attachments.task_id, auth.uid())
   );
 
 -- Task history policies (read-only for users)
 CREATE POLICY "Users can view history of their tasks" ON task_history
   FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM tasks
-      WHERE tasks.id = task_history.task_id
-      AND (tasks.responsible_id = auth.uid() OR tasks.requester_id = auth.uid())
-    )
+    task_visible_to(task_history.task_id, auth.uid())
     OR
     EXISTS (
       SELECT 1 FROM users
