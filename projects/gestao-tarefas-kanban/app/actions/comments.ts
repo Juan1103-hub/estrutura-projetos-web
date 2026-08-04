@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { requireActor } from "@/lib/auth/server-session";
+import { getServerActor } from "@/lib/auth/server-session";
 import { CommentWithUser } from "@/types/comment";
 import { notifyTaskStakeholders } from "@/lib/notifications/task-events";
 
@@ -56,6 +56,23 @@ function readSessionComments(): Record<string, StoredComment[]> {
 }
 
 export async function getComments(taskId: string): Promise<CommentWithUser[]> {
+  // Caminho real: Supabase — lê os comentários persistidos (RLS valida que o
+  // usuário participa da tarefa). Antes lia só da sessão demo, então
+  // comentários reais somiam ao reabrir o modal.
+  if (isSupabaseConfigured()) {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("comments")
+      .select("*, user:users(*)")
+      .eq("task_id", taskId)
+      .order("created_at", { ascending: false });
+    if (error) {
+      console.error("Erro ao buscar comentários:", error);
+      return [];
+    }
+    return (data ?? []) as unknown as CommentWithUser[];
+  }
+
   const session = readSessionComments();
   return (session[taskId] ?? []).map((c) => ({
     id: c.id,
@@ -82,8 +99,13 @@ export async function addComment(input: {
   if (!content) throw new Error("Comentário vazio");
 
   // Autorização real: o ator vem do cookie httpOnly, não do corpo. Qualquer
-  // usuário logado pode comentar, mas a identidade NÃO é forjável.
-  const actor = await requireActor("tasks.edit");
+  // usuário logado pode comentar nas tarefas em que participa (o RLS de
+  // comments valida task_visible_to); a identidade NÃO é forjável. Não usa
+  // requireActor("tasks.edit") porque isso só permitiria supervisor comentar.
+  const actor = await getServerActor();
+  if (!actor) {
+    throw new Error("Não autorizado: faça login para continuar.");
+  }
 
   // Caminho real: Supabase configurado
   if (isSupabaseConfigured()) {

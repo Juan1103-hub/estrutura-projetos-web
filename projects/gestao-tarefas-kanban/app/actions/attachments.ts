@@ -106,6 +106,21 @@ export async function addAttachment(input: NewAttachmentInput): Promise<Attachme
 }
 
 export async function getAttachments(taskId: string): Promise<Attachment[]> {
+  // Caminho real: Supabase — lê os anexos persistidos (RLS valida participação).
+  if (isSupabaseConfigured()) {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("attachments")
+      .select("*")
+      .eq("task_id", taskId)
+      .order("created_at", { ascending: false });
+    if (error) {
+      console.error("Erro ao buscar anexos:", error);
+      return [];
+    }
+    return (data ?? []) as unknown as Attachment[];
+  }
+
   const byTask = readSession();
   return byTask[taskId] ?? [];
 }

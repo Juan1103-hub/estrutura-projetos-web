@@ -1,7 +1,9 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { mockTasks } from "@/lib/mock-data";
+import { TaskWithRelations } from "@/types/task";
+import { getBoardTasks } from "@/app/actions/tasks";
 import {
   countTasks,
   productivityByCollaborator,
@@ -76,10 +78,23 @@ const getInitials = (name: string) =>
   name.split(" ").map((n) => n[0]).join("").toUpperCase();
 
 export function Dashboard() {
-  const counters = useMemo(() => countTasks(mockTasks), []);
-  const ranking = useMemo(() => productivityByCollaborator(mockTasks), []);
-  const rate = useMemo(() => completionRateWithinDeadline(mockTasks), []);
-  const distribution = useMemo(() => distributionByDepartment(mockTasks), []);
+  // Carrega as tarefas reais (Supabase ou mock): o dashboard reflete o mesmo
+  // conjunto do board, não números estáticos de mockTasks.
+  const [tasks, setTasks] = useState<TaskWithRelations[]>(mockTasks);
+  useEffect(() => {
+    let active = true;
+    getBoardTasks().then((data) => {
+      if (active && data.length > 0) setTasks(data);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const counters = useMemo(() => countTasks(tasks), [tasks]);
+  const ranking = useMemo(() => productivityByCollaborator(tasks), [tasks]);
+  const rate = useMemo(() => completionRateWithinDeadline(tasks), [tasks]);
+  const distribution = useMemo(() => distributionByDepartment(tasks), [tasks]);
   const maxDept = Math.max(1, ...distribution.map((d) => d.count));
   const maxConcluidas = Math.max(1, ...ranking.map((r) => r.concluidas));
 

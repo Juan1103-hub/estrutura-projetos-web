@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { listUsers } from "@/lib/auth/session";
-import { requireActor } from "@/lib/auth/server-session";
+import { requireActor, getServerActor } from "@/lib/auth/server-session";
 import { canModifyTask } from "@/lib/auth/roles";
 import { mockTasks } from "@/lib/mock-data";
 import {
@@ -247,11 +247,14 @@ export async function updateTask(input: {
     return { ok: false, error: "O título é obrigatório" };
   }
   // Autorização real (AC-014): supervisor edita qualquer tarefa; operacional
-  // só edita/move as tarefas das QUAIS é responsável. Não usa requireActor
-  // com "tasks.edit" porque nenhum perfil operacional tem essa permissão —
-  // o gate correto é canModifyTask(role, task, actor.id) no servidor.
-  const actor = await requireActor("tasks.edit");
-  void actor;
+  // só edita/move as tarefas das QUAIS é responsável. NÃO usa requireActor
+  // com "tasks.edit" (só supervisor tem) — isso travaria o operacional antes
+  // de chegar ao canModifyTask. Aqui exige apenas um usuário autenticado e o
+  // gate de negócio é canModifyTask(role, task, actor.id) logo abaixo.
+  const actor = await getServerActor();
+  if (!actor) {
+    return { ok: false, error: "Não autorizado: faça login para continuar." };
+  }
 
   // Caminho real: Supabase. Persiste a mudança e notifica os envolvidos.
   if (isSupabaseConfigured()) {
