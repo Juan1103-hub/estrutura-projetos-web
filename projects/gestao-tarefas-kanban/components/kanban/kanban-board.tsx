@@ -91,12 +91,17 @@ export function KanbanBoard() {
   // servidor e client renderizem o MESMO header. Após o mount, usa o usuário real.
   // `loggingOut` segura o re-render do header com o fallback ("flash de outro
   // login") enquanto a navegação para /login não completa.
+  // Durante a hidratação (mounted=false), exibe um perfil NEUTRO (sem papel
+  // de supervisor) para que servidor e client renderizem o MESMO header SEM
+  // revelar botões de supervisor para um funcionário. Se o fallback fosse
+  // 'supervisor', um almoxarife veria "Nova Tarefa/Usuários" por um instante
+  // antes do mount (flash da tela do supervisor).
   const displayUser =
     loggingOut
-      ? { id: 'demo-sup', name: 'Saindo...', role: 'supervisor' as const, roleLabel: '', email: '' }
+      ? { id: 'demo-sup', name: 'Saindo...', role: 'almoxarife' as const, roleLabel: '', email: '' }
       : mounted
         ? sessionUser
-        : { id: 'demo-sup', name: 'Carregando...', role: 'supervisor' as const, roleLabel: 'Supervisor', email: 'supervisor@vortice.com' };
+        : { id: 'demo-sup', name: 'Carregando...', role: 'almoxarife' as const, roleLabel: '', email: '' };
   // No SSR o useResponsive assume desktop (1024px); no mobile o client calcula
   // stack=true. Aplicar `stack` real só após o mount evita o hydration mismatch
   // das colunas (servidor renderiza horizontal, client renderiza vertical).
@@ -318,6 +323,7 @@ export function KanbanBoard() {
           filters={filters}
           onChange={setFilters}
           activeCount={activeFilterCount}
+          showAdvanced={can(displayUser.role, 'tasks.view_all')}
         />
 
         {/* Kanban Board */}

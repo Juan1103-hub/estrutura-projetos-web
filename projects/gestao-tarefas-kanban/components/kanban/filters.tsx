@@ -47,9 +47,12 @@ interface FiltersBarProps {
   filters: TaskFilters;
   onChange: (filters: TaskFilters) => void;
   activeCount: number;
+  /** true p/ supervisor: mostra filtros de Responsável e Categoria.
+   * Operacionais veem apenas Busca + Prioridade (foco no trabalho deles). */
+  showAdvanced?: boolean;
 }
 
-export function FiltersBar({ responsibleOptions, filters, onChange, activeCount }: FiltersBarProps) {
+export function FiltersBar({ responsibleOptions, filters, onChange, activeCount, showAdvanced = true }: FiltersBarProps) {
   const set = (patch: Partial<TaskFilters>) => onChange({ ...filters, ...patch });
 
   const isActive = activeCount > 0;
@@ -73,54 +76,58 @@ export function FiltersBar({ responsibleOptions, filters, onChange, activeCount 
         </div>
       </div>
 
-      {/* Responsável */}
-      <div className="flex flex-col gap-1.5 min-w-[160px]">
-        <Label className="text-xs text-muted-foreground uppercase tracking-wide">Responsável</Label>
-        <Select
-          value={filters.responsibleId ?? ""}
-          onValueChange={(v) => set({ responsibleId: v || null })}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Todos" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="">Todos</SelectItem>
-            {responsibleOptions.map((r) => (
-              <SelectItem key={r.id} value={r.id}>
-                {r.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      {/* Responsável — apenas supervisor */}
+      {showAdvanced && (
+        <div className="flex flex-col gap-1.5 min-w-[160px]">
+          <Label className="text-xs text-muted-foreground uppercase tracking-wide">Responsável</Label>
+          <Select
+            value={filters.responsibleId ?? ""}
+            onValueChange={(v) => set({ responsibleId: v || null })}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Todos" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">Todos</SelectItem>
+              {responsibleOptions.map((r) => (
+                <SelectItem key={r.id} value={r.id}>
+                  {r.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
-      {/* Categoria */}
-      <div className="flex flex-col gap-1.5 min-w-[180px]">
-        <Label className="text-xs text-muted-foreground uppercase tracking-wide">Categoria</Label>
-        <Select
-          value={filters.category ?? ""}
-          onValueChange={(v) => set({ category: (v || null) as TaskFilters["category"] })}
-        >
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Todas" />
-          </SelectTrigger>
-          <SelectContent className="max-h-72">
-            <SelectItem value="">Todas</SelectItem>
-            {Object.entries(CATEGORY_GROUPS).map(([group, cats]) => (
-              <div key={group}>
-                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                  {group}
+      {/* Categoria — apenas supervisor */}
+      {showAdvanced && (
+        <div className="flex flex-col gap-1.5 min-w-[180px]">
+          <Label className="text-xs text-muted-foreground uppercase tracking-wide">Categoria</Label>
+          <Select
+            value={filters.category ?? ""}
+            onValueChange={(v) => set({ category: (v || null) as TaskFilters["category"] })}
+          >
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Todas" />
+            </SelectTrigger>
+            <SelectContent className="max-h-72">
+              <SelectItem value="">Todas</SelectItem>
+              {Object.entries(CATEGORY_GROUPS).map(([group, cats]) => (
+                <div key={group}>
+                  <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                    {group}
+                  </div>
+                  {cats.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {TASK_CATEGORY_LABELS[c as keyof typeof TASK_CATEGORY_LABELS]}
+                    </SelectItem>
+                  ))}
                 </div>
-                {cats.map((c) => (
-                  <SelectItem key={c} value={c}>
-                    {TASK_CATEGORY_LABELS[c as keyof typeof TASK_CATEGORY_LABELS]}
-                  </SelectItem>
-                ))}
-              </div>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       {/* Prioridade */}
       <div className="flex flex-col gap-1.5 min-w-[140px]">
