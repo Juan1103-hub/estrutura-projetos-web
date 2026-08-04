@@ -70,15 +70,22 @@ export function useNotifications() {
       );
     }
 
-    // 3. Deadlines locais: recalcula prazos das tarefas a cada 60s
-    const seedDeadlines = () => {
-      getSessionTasks().then((sessionTasks) => {
-        deadlineNotifications([...mockTasks, ...sessionTasks]);
-        setNotifications(getNotifications());
-      });
-    };
-    seedDeadlines();
-    const deadlineTimer = window.setInterval(seedDeadlines, 60_000);
+    // 3. Deadlines locais: recalcula prazos das tarefas a cada 60s. Só roda no
+    // modo demo (sem Supabase) — com o banco ligado, os alertas reais de prazo
+    // viriam do Realtime; rodar aqui duplicaria a notificação no sino.
+    const supabaseClient = getBrowserClient();
+    const isDemoMode = !supabaseClient;
+    let deadlineTimer: number | null = null;
+    if (isDemoMode) {
+      const seedDeadlines = () => {
+        getSessionTasks().then((sessionTasks) => {
+          deadlineNotifications([...mockTasks, ...sessionTasks]);
+          setNotifications(getNotifications());
+        });
+      };
+      seedDeadlines();
+      deadlineTimer = window.setInterval(seedDeadlines, 60_000);
+    }
 
     // 4. Eventos locais (fallback/demo)
     const sync = () => setNotifications(getNotifications());
@@ -105,13 +112,34 @@ export function useNotifications() {
       }
     };
 
+    // Aprovação/reprovação (AC-028/029) — fallback local para o modo demo.
+    // Com Supabase, o approveTask/rejectTask criam a notificação no banco
+    // (Realtime cobre); aqui o evento cobre quando o banco não está ligado.
+    const onApproval = (e: Event) => {
+      const detail = (e as CustomEvent).detail ?? {};
+      const approved = detail.action === "approved";
+      if (detail.taskTitle) {
+        pushNotification({
+          type: "approval",
+          title: approved ? "Tarefa aprovada" : "Tarefa reprovada",
+          body: approved
+            ? `${detail.taskTitle} foi aprovada e movida para Concluído`
+            : `${detail.taskTitle} foi reprovada`,
+          taskId: detail.taskId,
+        });
+        sync();
+      }
+    };
+
     window.addEventListener("kanban:comment", onComment);
     window.addEventListener("kanban:new-task", onNewTask);
+    window.addEventListener("kanban:approval", onApproval);
 
     return () => {
-      window.clearInterval(deadlineTimer);
+      if (deadlineTimer !== null) window.clearInterval(deadlineTimer);
       window.removeEventListener("kanban:comment", onComment);
       window.removeEventListener("kanban:new-task", onNewTask);
+      window.removeEventListener("kanban:approval", onApproval);
       if (channel) {
         supabase?.removeChannel(channel);
       }

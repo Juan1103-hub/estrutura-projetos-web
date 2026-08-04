@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { listUsers } from "@/lib/auth/session";
 import { requireActor } from "@/lib/auth/server-session";
+import { canModifyTask } from "@/lib/auth/roles";
 import { mockTasks } from "@/lib/mock-data";
 import {
   TaskWithRelations,
@@ -245,13 +246,36 @@ export async function updateTask(input: {
   if (input.title !== undefined && !input.title.trim()) {
     return { ok: false, error: "O título é obrigatório" };
   }
-  // Autorização real: usuário logado. Em produção o gate seria por
-  // canModifyTask(role, task, actor.id) — aqui qualquer logado atualiza.
+  // Autorização real (AC-014): supervisor edita qualquer tarefa; operacional
+  // só edita/move as tarefas das QUAIS é responsável. Não usa requireActor
+  // com "tasks.edit" porque nenhum perfil operacional tem essa permissão —
+  // o gate correto é canModifyTask(role, task, actor.id) no servidor.
   const actor = await requireActor("tasks.edit");
+  void actor;
 
   // Caminho real: Supabase. Persiste a mudança e notifica os envolvidos.
   if (isSupabaseConfigured()) {
     const supabase = await createClient();
+
+    // Busca a tarefa ANTES de editar para validar canModifyTask no servidor
+    // (o RLS de UPDATE em tasks já restringe, mas reforçamos a regra de
+    // negócio: responsável + adicionais + supervisor).
+    const { data: existingRow, error: fetchError } = await supabase
+      .from("tasks")
+      .select("id, responsible_id, responsible_ids, requester_id")
+      .eq("id", input.id)
+      .single();
+    if (fetchError || !existingRow) {
+      return { ok: false, error: "Tarefa não encontrada" };
+    }
+    const isSupervisor = actor.role === "supervisor";
+    const isResponsible =
+      existingRow.responsible_id === actor.id ||
+      (existingRow.responsible_ids ?? []).includes(actor.id);
+    if (!isSupervisor && !isResponsible) {
+      return { ok: false, error: "Sem permissão para editar esta tarefa" };
+    }
+
     const { data, error } = await supabase
       .from("tasks")
       .update({
@@ -298,6 +322,10 @@ export async function updateTask(input: {
   }
   if (!existing) {
     return { ok: false, error: "Tarefa não encontrada" };
+  }
+  // AC-014: no demo também, operacional só edita as próprias tarefas.
+  if (!canModifyTask(actor.role, existing, actor.id)) {
+    return { ok: false, error: "Sem permissão para editar esta tarefa" };
   }
   byId[input.id] = {
     ...existing,

@@ -49,7 +49,11 @@ export function pushNotification(input: Omit<AppNotification, "id" | "createdAt"
   if (DEDUP_TYPES.includes(input.type)) {
     const existing = queue.find((n) => n.type === input.type && n.taskId === input.taskId && !n.read);
     if (existing) {
+      // Atualiza o conteúdo (ex: "Vence em breve" → "Atrasada" entre ciclos)
+      // além do timestamp — evita texto stale no sino.
       existing.createdAt = new Date().toISOString();
+      existing.title = input.title;
+      existing.body = input.body;
       return existing;
     }
   }

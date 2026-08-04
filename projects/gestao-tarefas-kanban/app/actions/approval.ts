@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { requireActor } from "@/lib/auth/server-session";
 import { TaskWithRelations } from "@/types/task";
+import { notifyTaskStakeholders } from "@/lib/notifications/task-events";
 
 /**
  * T-014 — Aprovar/reprovar tarefas.
@@ -69,7 +70,16 @@ export async function approveTask(input: {
       })
       .eq("id", input.taskId);
     if (error) return { success: false, error: error.message };
-    // TODO T-015: emitir notificação ao responsável.
+
+    // Notifica o responsável que a tarefa foi aprovada (AC-028 → Realtime).
+    const taskTitle = await getTaskTitle(input.taskId);
+    await notifyTaskStakeholders({
+      taskId: input.taskId,
+      type: "approval",
+      title: "Tarefa aprovada",
+      message: `"${taskTitle ?? "Sua tarefa"}" foi aprovada e movida para Concluído`,
+      excludeUserId: actor.id,
+    });
     return { success: true };
   }
 
@@ -82,6 +92,17 @@ export async function approveTask(input: {
   };
   writeState(state);
   return { success: true };
+}
+
+/** Busca o título de uma tarefa (para a mensagem da notificação). */
+async function getTaskTitle(taskId: string): Promise<string | null> {
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase.from("tasks").select("title").eq("id", taskId).single();
+    return data?.title ?? null;
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -112,7 +133,16 @@ export async function rejectTask(input: {
       })
       .eq("id", input.taskId);
     if (error) return { success: false, error: error.message };
-    // TODO T-015: emitir notificação ao responsável com a justificativa.
+
+    // Notifica o responsável com a justificativa (AC-029 → Realtime).
+    const taskTitle = await getTaskTitle(input.taskId);
+    await notifyTaskStakeholders({
+      taskId: input.taskId,
+      type: "approval",
+      title: "Tarefa reprovada",
+      message: `"${taskTitle ?? "Sua tarefa"}" foi reprovada: ${reason}`,
+      excludeUserId: actor.id,
+    });
     return { success: true };
   }
 
