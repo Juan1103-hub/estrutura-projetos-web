@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TaskWithRelations, TaskPriority, TaskCategory, TASK_CATEGORY_LABELS } from "@/types/task";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -9,9 +9,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createTask } from "@/app/actions/tasks";
-import { listUsers } from "@/lib/auth/session";
+import { listUsersForCreate } from "@/app/actions/auth";
+import { AuthUser } from "@/lib/auth/session";
 import { cn } from "@/lib/utils";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Loader2 } from "lucide-react";
 
 const CATEGORY_GROUPS: { label: string; value: TaskCategory }[] = [
   { label: "Inventário", value: "almoxarifado_inventario" },
@@ -59,8 +60,25 @@ export function CreateTaskModal({ open, onClose, onCreated, requester }: CreateT
   const [checklistInput, setChecklistInput] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  // Responsáveis reais (UUID no Supabase, demo no fallback) — carregados via
+  // server action para o id bater com a FK `tasks.responsible_id`.
+  const [users, setUsers] = useState<AuthUser[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
 
-  const users = listUsers().filter((u) => u.role !== "supervisor");
+  useEffect(() => {
+    let active = true;
+    setLoadingUsers(true);
+    listUsersForCreate()
+      .then((list) => {
+        if (active) setUsers(list.filter((u) => u.role !== "supervisor"));
+      })
+      .finally(() => {
+        if (active) setLoadingUsers(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleClose = () => {
     setTitle("");
@@ -160,7 +178,17 @@ export function CreateTaskModal({ open, onClose, onCreated, requester }: CreateT
               <div className="space-y-2 sm:col-span-2">
                 <Label className="text-sm font-medium">Responsável(is) *</Label>
                 <div className="space-y-1.5 rounded-lg border border-border bg-muted/20 p-2.5">
-                  {users.map((u) => {
+                  {loadingUsers ? (
+                    <div className="flex items-center gap-2 px-2.5 py-2 text-sm text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Carregando colaboradores...
+                    </div>
+                  ) : users.length === 0 ? (
+                    <p className="px-2.5 py-2 text-sm text-muted-foreground">
+                      Nenhum colaborador disponível.
+                    </p>
+                  ) : (
+                    users.map((u) => {
                     const checked = responsibleIds.includes(u.id);
                     return (
                       <label
@@ -188,7 +216,8 @@ export function CreateTaskModal({ open, onClose, onCreated, requester }: CreateT
                         <span className="text-xs text-muted-foreground">{u.roleLabel}</span>
                       </label>
                     );
-                  })}
+                    })
+                  )}
                   <p className="px-2.5 pt-1 text-[11px] text-muted-foreground">
                     {responsibleIds.length === 0
                       ? "Selecione ao menos um responsável"

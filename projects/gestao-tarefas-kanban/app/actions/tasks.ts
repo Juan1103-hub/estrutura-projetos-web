@@ -147,7 +147,27 @@ export async function createTask(input: CreateTaskInput): Promise<TaskResult> {
       .select("*, responsible:users!tasks_responsible_id_fkey(*), requester:users!tasks_requester_id_fkey(*)")
       .single();
     if (error) return { ok: false, error: error.message };
-    return { ok: true, task: data as unknown as TaskWithRelations };
+    const created = data as unknown as TaskWithRelations;
+
+    // Insere os itens de checklist (AC-017): cada título vira uma linha na
+    // tabela `checklist_items`, mantendo a ordem (position).
+    const titles = (input.checklistTitles ?? [])
+      .map((t) => t.trim())
+      .filter(Boolean);
+    let checklistItems: ChecklistItem[] = [];
+    if (titles.length > 0) {
+      const { data: items, error: itemsError } = await supabase
+        .from("checklist_items")
+        .insert(titles.map((title, i) => ({ task_id: created.id, title, position: i })))
+        .select();
+      if (itemsError) return { ok: false, error: itemsError.message };
+      checklistItems = items as unknown as ChecklistItem[];
+    }
+
+    return {
+      ok: true,
+      task: { ...created, checklist_items: checklistItems },
+    };
   }
 
   const now = new Date().toISOString();

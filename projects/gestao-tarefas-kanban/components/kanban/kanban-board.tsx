@@ -187,6 +187,11 @@ export function KanbanBoard() {
     );
   };
 
+  const handleTaskDelete = (taskId: string) => {
+    setTasks((prev) => prev.filter((t) => t.id !== taskId));
+    setSelectedTask(null);
+  };
+
   const handleTaskCreated = (newTask: TaskWithRelations) => {
     setTasks((prev) => [...prev, newTask]);
     // Dispara notificação de nova tarefa (AC-042): o hook gera a notificação
@@ -347,6 +352,8 @@ export function KanbanBoard() {
             : false
         }
         canApprove={can(sessionUser.role, 'tasks.approve')}
+        canDelete={can(sessionUser.role, 'tasks.delete')}
+        onDelete={handleTaskDelete}
       />
 
       {/* Modal de criação de tarefa (apenas supervisor — AC-015) */}

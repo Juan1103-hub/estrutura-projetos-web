@@ -15,38 +15,43 @@ interface TaskCardProps {
   onClick?: () => void;
 }
 
-// Cores de prioridade com distinção clara — SÃO AS ÚNICAS a chamar atenção
-// forte (diretriz 2). Dessaturadas ~30% (tons pastel escuros p/ dark mode).
+// Cores de prioridade — HIERARQUIA RÍGIDA (diretriz 1):
+// Alta e Crítica = cor saturada (vermelho/laranja) e única a chamar atenção forte.
+// Baixa e Média = neutro discreto (sem preenchimento saturado).
+// Contraste AA no dark mode: texto claro (L≥0.85) sobre fundo escuro (L≤0.30).
 const priorityColors = {
-  baixa: 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/60 dark:text-emerald-200 dark:border-emerald-800/80',
-  media: 'bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/60 dark:text-yellow-100 dark:border-yellow-800/80',
-  alta: 'bg-red-100 text-red-800 border-red-300 dark:bg-red-900/60 dark:text-red-200 dark:border-red-800/80',
-  critica: 'bg-red-200 text-red-900 border-red-400 font-semibold dark:bg-red-900/70 dark:text-red-100 dark:border-red-700/80',
+  // Baixa/Média: neutro — não competem com Alta/Crítica.
+  baixa: 'bg-muted/80 text-slate-700 border-transparent dark:bg-white/5 dark:text-slate-300 dark:border-transparent',
+  media: 'bg-muted/80 text-slate-700 border-transparent dark:bg-white/5 dark:text-slate-300 dark:border-transparent',
+  // Alta: vermelho saturado (danger), a única prioridade que grita.
+  alta: 'bg-red-100 text-red-800 border-red-300 dark:bg-red-950/70 dark:text-red-300 dark:border-red-900/60',
+  // Crítica: vermelho ainda mais forte, com peso (semibold).
+  critica: 'bg-red-200 text-red-900 border-red-400 font-semibold dark:bg-red-900/80 dark:text-red-100 dark:border-red-700/60',
 };
 
-// Categorias são RÓTULO DISCRETO (diretriz 1): fundo neutro cinza translúcido,
-// texto colorido sutil, SEM preenchimento saturado — não competem com prioridade.
+// Categorias são RÓTULO DISCRETO: fundo neutro cinza translúcido, texto em tom
+// neutro levemente entonado. NUNCA cor saturada — não competem com prioridade.
 const CATEGORY_COLORS: { prefix: string; classes: string }[] = [
-  { prefix: 'almoxarifado_inventario', classes: 'bg-white/50 text-teal-800 border-transparent dark:bg-white/5 dark:text-teal-300/90 dark:border-transparent' },
-  { prefix: 'almoxarifado_ajustes_saldo', classes: 'bg-white/50 text-cyan-800 border-transparent dark:bg-white/5 dark:text-cyan-300/90 dark:border-transparent' },
-  { prefix: 'almoxarifado', classes: 'bg-white/50 text-teal-800 border-transparent dark:bg-white/5 dark:text-teal-300/90 dark:border-transparent' },
-  { prefix: 'compras_cotacao', classes: 'bg-white/50 text-sky-800 border-transparent dark:bg-white/5 dark:text-sky-300/90 dark:border-transparent' },
-  { prefix: 'compras_pedido', classes: 'bg-white/50 text-indigo-800 border-transparent dark:bg-white/5 dark:text-indigo-300/90 dark:border-transparent' },
-  { prefix: 'compras', classes: 'bg-white/50 text-sky-800 border-transparent dark:bg-white/5 dark:text-sky-300/90 dark:border-transparent' },
-  { prefix: 'administrativo_relatorios', classes: 'bg-white/50 text-violet-800 border-transparent dark:bg-white/5 dark:text-violet-300/90 dark:border-transparent' },
-  { prefix: 'administrativo_indicadores', classes: 'bg-white/50 text-fuchsia-800 border-transparent dark:bg-white/5 dark:text-fuchsia-300/90 dark:border-transparent' },
-  { prefix: 'administrativo_processos', classes: 'bg-white/50 text-purple-800 border-transparent dark:bg-white/5 dark:text-purple-300/90 dark:border-transparent' },
-  { prefix: 'administrativo', classes: 'bg-white/50 text-violet-800 border-transparent dark:bg-white/5 dark:text-violet-300/90 dark:border-transparent' },
+  { prefix: 'almoxarifado_inventario', classes: 'bg-muted/80 text-slate-700 border-transparent dark:bg-white/5 dark:text-slate-300 dark:border-transparent' },
+  { prefix: 'almoxarifado_ajustes_saldo', classes: 'bg-muted/80 text-slate-700 border-transparent dark:bg-white/5 dark:text-slate-300 dark:border-transparent' },
+  { prefix: 'almoxarifado', classes: 'bg-muted/80 text-slate-700 border-transparent dark:bg-white/5 dark:text-slate-300 dark:border-transparent' },
+  { prefix: 'compras_cotacao', classes: 'bg-muted/80 text-slate-700 border-transparent dark:bg-white/5 dark:text-slate-300 dark:border-transparent' },
+  { prefix: 'compras_pedido', classes: 'bg-muted/80 text-slate-700 border-transparent dark:bg-white/5 dark:text-slate-300 dark:border-transparent' },
+  { prefix: 'compras', classes: 'bg-muted/80 text-slate-700 border-transparent dark:bg-white/5 dark:text-slate-300 dark:border-transparent' },
+  { prefix: 'administrativo_relatorios', classes: 'bg-muted/80 text-slate-700 border-transparent dark:bg-white/5 dark:text-slate-300 dark:border-transparent' },
+  { prefix: 'administrativo_indicadores', classes: 'bg-muted/80 text-slate-700 border-transparent dark:bg-white/5 dark:text-slate-300 dark:border-transparent' },
+  { prefix: 'administrativo_processos', classes: 'bg-muted/80 text-slate-700 border-transparent dark:bg-white/5 dark:text-slate-300 dark:border-transparent' },
+  { prefix: 'administrativo', classes: 'bg-muted/80 text-slate-700 border-transparent dark:bg-white/5 dark:text-slate-300 dark:border-transparent' },
 ];
 
 function categoryColor(category: string): string {
   const match = CATEGORY_COLORS.find((c) => category.startsWith(c.prefix));
-  return match?.classes ?? 'bg-white/50 text-slate-700 border-transparent dark:bg-white/5 dark:text-slate-300/90 dark:border-transparent';
+  return match?.classes ?? 'bg-muted/80 text-slate-700 border-transparent dark:bg-white/5 dark:text-slate-300 dark:border-transparent';
 }
 
 const DEADLINE_BADGE = {
-  'vence-em-breve': { label: 'Vence em breve', color: 'bg-orange-100 text-orange-800 border-orange-300' },
-  atrasada: { label: 'Atrasada', color: 'bg-red-100 text-red-800 border-red-300' },
+  'vence-em-breve': { label: 'Vence em breve', color: 'bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-950/70 dark:text-orange-300 dark:border-orange-900/60' },
+  atrasada: { label: 'Atrasada', color: 'bg-red-100 text-red-800 border-red-300 dark:bg-red-950/70 dark:text-red-300 dark:border-red-900/60' },
 } as const;
 
 export function TaskCard({ task, onClick }: TaskCardProps) {
@@ -74,34 +79,36 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
   return (
     <Card
       className={cn(
-        "p-3.5 cursor-pointer transition-colors",
+        "p-3 cursor-pointer transition-colors",
         "flex flex-col h-full",
-        // Diretriz 1: hover dá leve destaque de luminosidade (eleva o card)
+        // Hover: leve destaque de luminosidade (eleva o card)
         "hover:bg-card/90 hover:ring-1 hover:ring-foreground/15 dark:hover:bg-white/[0.03] dark:hover:ring-white/15",
-        isOverdue && "ring-1 ring-red-200 dark:ring-red-900/30",
-        isDueSoon && "ring-1 ring-orange-200 dark:ring-orange-900/30"
+        // Atrasada: destaque forte — anel vermelho 2px (sobrepõe o anel cinza do Card)
+        isOverdue && "ring-2 ring-red-500/70 dark:ring-red-500/80",
+        // Vence em breve: destaque médio — anel laranja 1px, menos agressivo que atrasada
+        isDueSoon && "ring-1 ring-orange-400/60 dark:ring-orange-500/70"
       )}
       onClick={onClick}
     >
-      {/* Header: Title + Priority inline */}
-      <div className="flex flex-col gap-1.5">
+      {/* Header: Title + tags — espaçamento compacto */}
+      <div className="flex flex-col gap-1">
         <h3 className="font-semibold text-sm leading-tight line-clamp-2 text-foreground">
           {task.title}
         </h3>
 
-        {/* Category + Priority row */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <Badge variant="outline" className={cn("text-[10px] px-2 py-0.5 h-auto", categoryColor(task.category))}>
+        {/* Tags: uma linha, gap reduzido — prioridade tem peso próprio */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <Badge variant="outline" className={cn("text-[10px] px-2 py-0 h-auto leading-4", categoryColor(task.category))}>
             {categoryLabel}
           </Badge>
           <Badge
             variant="outline"
-            className={cn("text-[10px] px-2 py-0.5 h-auto shrink-0", priorityClass)}
+            className={cn("text-[10px] px-2 py-0 h-auto leading-4 shrink-0", priorityClass)}
           >
             {priorityLabel}
           </Badge>
           {task.help_requested && (
-            <Badge variant="outline" className="text-[10px] px-2 py-0.5 h-auto shrink-0 bg-orange-50 text-orange-700 border-orange-200 flex items-center gap-1">
+            <Badge variant="outline" className="text-[10px] px-2 py-0 h-auto leading-4 shrink-0 bg-muted/80 text-slate-700 border-transparent dark:bg-white/5 dark:text-slate-300 flex items-center gap-1">
               <Flag className="w-2.5 h-2.5" />
               Apoio
             </Badge>
@@ -109,9 +116,9 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
         </div>
       </div>
 
-      {/* Body: Checklist progress */}
+      {/* Body: Checklist progress — respiro menor entre seções */}
       {totalChecklist > 0 && (
-        <div className="mt-3 flex flex-col gap-1.5">
+        <div className="mt-2.5 flex flex-col gap-1">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
               <CheckSquare className="w-3.5 h-3.5" />
@@ -123,7 +130,7 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
             <div
               className={cn(
                 "h-full transition-all duration-300",
-                // Diretriz 5: verde quando 100%, âmbar em progresso
+                // Verde quando 100%, âmbar em progresso
                 progressPercent >= 100 ? "bg-success" : "bg-primary"
               )}
               style={{ width: `${progressPercent}%` }}
@@ -134,11 +141,12 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
 
       {/* Due Date + Deadline indicator */}
       {(dueDate || deadlineBadge) && (
-        <div className="mt-3 flex items-center gap-2 flex-wrap">
+        <div className="mt-2.5 flex items-center gap-1.5 flex-wrap">
           {dueDate && (
             <span
               className={cn(
-                "flex items-center gap-1.5 text-xs font-medium",
+                "flex items-center gap-1 text-xs font-medium",
+                // Atrasada: vermelho saturado; vence em breve: laranja; resto neutro
                 isOverdue ? 'text-red-600 dark:text-red-400' :
                 isDueSoon ? 'text-orange-600 dark:text-orange-400' :
                 'text-muted-foreground'
@@ -149,19 +157,19 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
             </span>
           )}
           {deadlineBadge && (
-            <Badge variant="outline" className={cn("text-[10px] px-2 py-0.5 h-auto shrink-0", deadlineBadge.color)}>
+            <Badge variant="outline" className={cn("text-[10px] px-2 py-0 h-auto leading-4 shrink-0", deadlineBadge.color)}>
               {deadlineBadge.label}
             </Badge>
           )}
         </div>
       )}
 
-      {/* Footer: Responsible + Counts */}
-      <div className="mt-auto pt-3 border-t flex items-center justify-between gap-2 flex-wrap">
-        {/* Responsible */}
-        <div className="flex items-center gap-2 min-w-0 flex-1">
-          <Avatar className="w-6 h-6 flex-shrink-0">
-            <AvatarFallback className="text-xs bg-teal-100 text-teal-700">
+      {/* Footer: avatar + comentários + anexos numa única linha, sem quebrar */}
+      <div className="mt-auto pt-2 border-t flex items-center justify-between gap-2">
+        {/* Responsável */}
+        <div className="flex items-center gap-1.5 min-w-0 flex-1">
+          <Avatar className="w-5 h-5 flex-shrink-0">
+            <AvatarFallback className="text-[10px] bg-muted text-muted-foreground dark:bg-white/10 dark:text-slate-300">
               {responsibleInitials}
             </AvatarFallback>
           </Avatar>
@@ -170,8 +178,8 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
           </span>
         </div>
 
-        {/* Counts */}
-        <div className="flex items-center gap-2.5 text-muted-foreground flex-shrink-0">
+        {/* Contadores: comentários + anexos, sem wrap */}
+        <div className="flex items-center gap-2 text-muted-foreground flex-shrink-0">
           {task.comments_count > 0 && (
             <span className="flex items-center gap-1 text-xs" title={`${task.comments_count} comentário(s)`}>
               <MessageSquare className="w-3.5 h-3.5" />

@@ -18,7 +18,18 @@ import { TaskAttachmentsSection } from "./task-attachments-section";
 import { TaskHistorySection } from "./task-history-section";
 import { ApprovalSection } from "./approval-section";
 import { approveTask, rejectTask } from "@/app/actions/approval";
+import { deleteTask } from "@/app/actions/tasks";
 import { RequestHelpButton } from "./request-help-button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { addComment as addCommentAction } from "@/app/actions/comments";
 import {
   getChecklist,
@@ -31,13 +42,17 @@ import {
   getAttachments as getAttachmentsAction,
   deleteAttachment as deleteAttachmentAction,
 } from "@/app/actions/attachments";
-import { Info, CheckSquare, Paperclip, MessageSquare, History } from "lucide-react";
+import { Info, CheckSquare, Paperclip, MessageSquare, History, Trash2 } from "lucide-react";
 
 interface TaskModalProps {
   task: TaskWithRelations | null;
   open: boolean;
   onClose: () => void;
   onUpdate?: (task: TaskWithRelations) => void;
+  /** Remove a tarefa do board após exclusão confirmada. */
+  onDelete?: (taskId: string) => void;
+  /** Se pode excluir a tarefa (apenas supervisor — tasks.delete). */
+  canDelete?: boolean;
   canEdit?: boolean;
   canComment?: boolean;
   canApprove?: boolean;
@@ -128,7 +143,7 @@ function generateDemoData(task: TaskWithRelations) {
   return { comments, attachments, history };
 }
 
-export function TaskModal({ task, open, onClose, onUpdate, canEdit = false, canComment = false, canApprove = false }: TaskModalProps) {
+export function TaskModal({ task, open, onClose, onUpdate, onDelete, canDelete = false, canEdit = false, canComment = false, canApprove = false }: TaskModalProps) {
 
   // Aprovação é exclusiva de quem tem permissão de supervisor (tasks.approve).
   // Só canEdit (responsável) NÃO autoriza a revisão — evita que um operacional
@@ -143,6 +158,9 @@ export function TaskModal({ task, open, onClose, onUpdate, canEdit = false, canC
     { approved?: boolean; rejected?: boolean; reason?: string } | null
   >(null);
   const [approvalError, setApprovalError] = useState<string | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   // Sincroniza o estado editado com a tarefa aberta
   const currentTask = open ? (editedTask ?? task) : null;
@@ -334,6 +352,23 @@ export function TaskModal({ task, open, onClose, onUpdate, canEdit = false, canC
     setEditedTask(null);
   };
 
+  // Exclusão da tarefa (apenas supervisor — AC-019). Após confirmar, chama a
+  // action no servidor e informa o board para remover o card.
+  const handleDeleteTask = async () => {
+    if (!currentTask) return;
+    setDeleting(true);
+    setDeleteError(null);
+    const result = await deleteTask({ id: currentTask.id });
+    setDeleting(false);
+    if (!result.ok) {
+      setDeleteError(result.error ?? "Erro ao excluir tarefa");
+      return;
+    }
+    setDeleteConfirmOpen(false);
+    onDelete?.(currentTask.id);
+    handleClose();
+  };
+
   const handleClose = () => {
     setEditedTask(null);
     setLiveComments(null);
@@ -341,6 +376,8 @@ export function TaskModal({ task, open, onClose, onUpdate, canEdit = false, canC
     setLiveAttachments(null);
     setApprovalResult(null);
     setApprovalError(null);
+    setDeleteError(null);
+    setDeleteConfirmOpen(false);
     setActiveTab("info");
     onClose();
   };
@@ -519,8 +556,22 @@ export function TaskModal({ task, open, onClose, onUpdate, canEdit = false, canC
 
         {/* Footer com ações */}
         <div className="px-6 py-4 flex items-center justify-between">
-          <div className="text-xs text-muted-foreground">
-            Criado em {new Date(currentTask.created_at).toLocaleDateString("pt-BR")}
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-muted-foreground">
+              Criado em {new Date(currentTask.created_at).toLocaleDateString("pt-BR")}
+            </span>
+            {/* Exclusão exclusiva do supervisor (AC-019) */}
+            {canDelete && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10"
+                onClick={() => setDeleteConfirmOpen(true)}
+              >
+                <Trash2 className="h-4 w-4" />
+                Excluir tarefa
+              </Button>
+            )}
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleClose}>
@@ -532,6 +583,34 @@ export function TaskModal({ task, open, onClose, onUpdate, canEdit = false, canC
           </div>
         </div>
       </DialogContent>
+
+      {/* Confirmação de exclusão (apenas supervisor) */}
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={(isOpen) => !isOpen && setDeleteConfirmOpen(false)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir tarefa?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação remove a tarefa "{currentTask.title}" do quadro e não pode
+              ser desfeita. Checklists, comentários e anexos também serão excluídos.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {deleteError && (
+            <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+              {deleteError}
+            </p>
+          )}
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={deleting}
+              onClick={handleDeleteTask}
+            >
+              {deleting ? "Excluindo..." : "Excluir"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }
