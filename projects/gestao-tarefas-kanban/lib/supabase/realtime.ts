@@ -1,7 +1,11 @@
 "use client";
 
 import { createBrowserClient } from "@supabase/ssr";
-import type { RealtimeChannel } from "@supabase/supabase-js";
+import type {
+  RealtimeChannel,
+  RealtimePostgresChangesPayload,
+  REALTIME_SUBSCRIBE_STATES,
+} from "@supabase/supabase-js";
 
 /**
  * T-015 — Client Supabase com Realtime habilitado (browser).
@@ -66,7 +70,7 @@ export function subscribeNotifications(
         table: "notifications",
         filter: `user_id=eq.${userId}`,
       },
-      (payload) => {
+      (payload: RealtimePostgresChangesPayload<NotificationPayload>) => {
         const n = payload.new as NotificationPayload;
         onInsert(n);
       }
@@ -79,12 +83,12 @@ export function subscribeNotifications(
         table: "notifications",
         filter: `user_id=eq.${userId}`,
       },
-      (payload) => {
+      (payload: RealtimePostgresChangesPayload<NotificationPayload>) => {
         const n = payload.new as NotificationPayload;
         onUpdate?.(n);
       }
     )
-    .subscribe((status) => {
+    .subscribe((status: REALTIME_SUBSCRIBE_STATES) => {
       if (status === "SUBSCRIBED") {
         console.log(`[realtime] Inscrito em notifications:${userId}`);
       } else if (status === "CHANNEL_ERROR") {
