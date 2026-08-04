@@ -74,7 +74,7 @@ export function KanbanBoard() {
   const [filters, setFilters] = useState<TaskFilters>({});
   const notifications = useNotifications();
   const router = useRouter();
-  const { stack } = useResponsive();
+  const { stack: responsiveStack } = useResponsive();
   // Usuário logado (modo demo). Se ninguém logou, assume supervisor para
   // a demonstração não ficar bloqueada.
   const [currentUser, setCurrentUser] = useState(() => getStoredUser());
@@ -97,6 +97,10 @@ export function KanbanBoard() {
       : mounted
         ? sessionUser
         : { id: 'demo-sup', name: 'Carregando...', role: 'supervisor' as const, roleLabel: 'Supervisor', email: 'supervisor@vortice.com' };
+  // No SSR o useResponsive assume desktop (1024px); no mobile o client calcula
+  // stack=true. Aplicar `stack` real só após o mount evita o hydration mismatch
+  // das colunas (servidor renderiza horizontal, client renderiza vertical).
+  const stack = mounted ? responsiveStack : false;
 
   // Só desloga após confirmação (AC: "deseja sair?"). Evita saída acidental.
   const handleLogout = async () => {
