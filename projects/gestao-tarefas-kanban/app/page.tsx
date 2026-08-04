@@ -18,22 +18,14 @@ export default function HomePage() {
         <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
           Gestão de tarefas para as equipes operacionais
         </p>
-        <div className="flex justify-center gap-4">
-          <Link
-            href="/kanban"
-            className="inline-block px-6 py-3 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors"
-          >
-            Quadro de Operações
-          </Link>
-          <Link
-            href="/dashboard"
-            className="inline-block px-6 py-3 bg-slate-700 text-white rounded-lg font-medium hover:bg-slate-800 transition-colors"
-          >
-            Dashboard
-          </Link>
+        {/* Ação única: Entrar. Quadro/Dashboard são rotas protegidas que
+            redirecionam ao login sem sessão — mostrar os três botões aqui era
+            redundante. Após o login, o usuário cai no quadro e navega ao
+            dashboard pelo header. */}
+        <div className="flex justify-center">
           <Link
             href="/login"
-            className="inline-block px-6 py-3 border border-slate-400 text-slate-700 dark:text-slate-200 dark:border-slate-600 rounded-lg font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="inline-block px-8 py-3 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors"
           >
             Entrar
           </Link>

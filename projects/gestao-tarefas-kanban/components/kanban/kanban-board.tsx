@@ -51,7 +51,7 @@ import { useResponsive } from '@/hooks/use-responsive';
 import { Logo } from '@/components/brand/logo';
 import { cn } from '@/lib/utils';
 import { CreateTaskModal } from '@/components/task-modal/create-task-modal';
-import { getSessionTasks } from '@/app/actions/tasks';
+import { getBoardTasks } from '@/app/actions/tasks';
 import { logout } from '@/app/actions/auth';
 
 const columns: TaskStatus[] = [
@@ -133,14 +133,13 @@ export function KanbanBoard() {
     })
   );
 
-  // Mescla tarefas criadas na sessão demo com o mock inicial.
+  // Carrega as tarefas do quadro: com Supabase, vem do banco (RLS filtra por
+  // perfil — o responsável vê as próprias, inclusive as criadas pelo
+  // supervisor). Sem Supabase, mescla os mocks com a sessão demo.
   useEffect(() => {
-    getSessionTasks().then((sessionTasks) => {
-      if (sessionTasks.length > 0) {
-        setTasks((prev) => {
-          const ids = new Set(prev.map((t) => t.id));
-          return [...prev, ...sessionTasks.filter((t) => !ids.has(t.id))];
-        });
+    getBoardTasks().then((boardTasks) => {
+      if (boardTasks.length > 0) {
+        setTasks(boardTasks);
       }
     });
   }, []);

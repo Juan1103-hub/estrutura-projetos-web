@@ -362,3 +362,29 @@ export async function deleteTask(input: { id: string }): Promise<{ ok: boolean; 
 export async function getSessionTasks(): Promise<TaskWithRelations[]> {
   return Object.values(readSession());
 }
+
+/**
+ * Tarefas do quadro. Com Supabase, lê da tabela `tasks` (o RLS das policies
+ * "Supervisors can view all tasks" / "Users can view their assigned tasks"
+ * já filtra pelo perfil logado — o responsável vê as próprias, inclusive as
+ * que o supervisor criou para ele). Sem Supabase, retorna os mocks + sessão.
+ */
+export async function getBoardTasks(): Promise<TaskWithRelations[]> {
+  if (isSupabaseConfigured()) {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("tasks")
+      .select(
+        "*, responsible:users!tasks_responsible_id_fkey(*), requester:users!tasks_requester_id_fkey(*), checklist_items(*)"
+      )
+      .order("created_at", { ascending: false });
+    if (error) {
+      console.error("Erro ao buscar tarefas do quadro:", error);
+      return [];
+    }
+    // O RLS garante que o usuário só receba as tarefas que pode ver; o
+    // `visibleTasks` no client continua como segunda camada (RBAC de UI).
+    return (data ?? []) as unknown as TaskWithRelations[];
+  }
+  return [...mockTasks, ...Object.values(readSession())];
+}
