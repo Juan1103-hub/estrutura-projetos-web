@@ -56,6 +56,8 @@ interface TaskModalProps {
   canEdit?: boolean;
   canComment?: boolean;
   canApprove?: boolean;
+  /** Pode ADICIONAR/REMOVER itens do checklist (apenas supervisor). */
+  canManageChecklist?: boolean;
 }
 
 // Gera dados de demonstração coerentes com os contadores da tarefa.
@@ -143,7 +145,7 @@ function generateDemoData(task: TaskWithRelations) {
   return { comments, attachments, history };
 }
 
-export function TaskModal({ task, open, onClose, onUpdate, onDelete, canDelete = false, canEdit = false, canComment = false, canApprove = false }: TaskModalProps) {
+export function TaskModal({ task, open, onClose, onUpdate, onDelete, canDelete = false, canEdit = false, canComment = false, canApprove = false, canManageChecklist = false }: TaskModalProps) {
 
   // Aprovação é exclusiva de quem tem permissão de supervisor (tasks.approve).
   // Só canEdit (responsável) NÃO autoriza a revisão — evita que um operacional
@@ -521,9 +523,10 @@ export function TaskModal({ task, open, onClose, onUpdate, onDelete, canDelete =
                   <TaskChecklistSection
                     items={checklistItems}
                     onUpdate={handleToggleChecklist}
-                    onAdd={canEdit ? handleAddChecklist : undefined}
-                    onDelete={canEdit ? handleDeleteChecklist : undefined}
-                    canEdit={canEdit}
+                    onAdd={canManageChecklist ? handleAddChecklist : undefined}
+                    onDelete={canManageChecklist ? handleDeleteChecklist : undefined}
+                    canUpdate={canEdit}
+                    canManage={canManageChecklist}
                   />
                 </TabsContent>
 

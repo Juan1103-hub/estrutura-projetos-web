@@ -424,6 +424,7 @@ export function KanbanBoard() {
         }
         canApprove={can(sessionUser.role, 'tasks.approve')}
         canDelete={can(sessionUser.role, 'tasks.delete')}
+        canManageChecklist={can(sessionUser.role, 'tasks.delete')}
         onDelete={handleTaskDelete}
       />
 

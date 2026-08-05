@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { requireActor, getServerActor } from "@/lib/auth/server-session";
 import { ChecklistItem } from "@/types/task";
 
 /**
@@ -60,6 +61,25 @@ export async function updateChecklistItem(input: {
   completed: boolean;
   baseItems?: ChecklistItem[];
 }): Promise<ChecklistItem> {
+  // Marcar item como concluído: qualquer usuário autenticado que participe da
+  // tarefa (o RLS valida task_visible_to). Operacional executa o trabalho.
+  const actor = await getServerActor();
+  if (!actor) throw new Error("Não autorizado: faça login para continuar.");
+
+  // Caminho real: Supabase — persiste o estado concluído no banco.
+  if (isSupabaseConfigured()) {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("checklist_items")
+      .update({ completed: input.completed, updated_at: new Date().toISOString() })
+      .eq("id", input.itemId)
+      .eq("task_id", input.taskId)
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+    return data as unknown as ChecklistItem;
+  }
+
   const byTask = readSession();
   const current = byTask[input.taskId] ?? [];
   // Procura primeiro na sessão; se for um item base (mock/demo), usa a base
@@ -97,6 +117,9 @@ export async function addChecklistItem(input: {
   const title = input.title.trim();
   if (!title) throw new Error("Título vazio");
 
+  // Adicionar item: apenas supervisor (tasks.edit — só supervisor tem).
+  await requireActor("tasks.edit");
+
   // Caminho real: Supabase configurado
   if (isSupabaseConfigured()) {
     const supabase = await createClient();
@@ -130,6 +153,9 @@ export async function deleteChecklistItem(input: {
   taskId: string;
   itemId: string;
 }): Promise<void> {
+  // Remover item: apenas supervisor.
+  await requireActor("tasks.edit");
+
   if (isSupabaseConfigured()) {
     const supabase = await createClient();
     const { error } = await supabase

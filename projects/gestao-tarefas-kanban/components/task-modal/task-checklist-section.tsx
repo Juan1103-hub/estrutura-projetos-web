@@ -16,7 +16,10 @@ interface TaskChecklistSectionProps {
   onAdd?: (title: string) => void;
   /** remove um item do checklist */
   onDelete?: (itemId: string) => void;
-  canEdit?: boolean;
+  /** pode marcar/desmarcar itens (quem participa da tarefa — executa o trabalho) */
+  canUpdate?: boolean;
+  /** pode ADICIONAR/REMOVER itens (apenas supervisor) */
+  canManage?: boolean;
 }
 
 export function TaskChecklistSection({
@@ -24,7 +27,8 @@ export function TaskChecklistSection({
   onUpdate,
   onAdd,
   onDelete,
-  canEdit = false,
+  canUpdate = false,
+  canManage = false,
 }: TaskChecklistSectionProps) {
   const [newItemText, setNewItemText] = useState("");
 
@@ -33,7 +37,7 @@ export function TaskChecklistSection({
   const progressPercent = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 
   const handleToggle = (itemId: string) => {
-    if (!canEdit || !onUpdate) return;
+    if (!canUpdate || !onUpdate) return;
     onUpdate(itemId);
   };
 
@@ -44,7 +48,7 @@ export function TaskChecklistSection({
   };
 
   const handleDelete = (itemId: string) => {
-    if (!canEdit || !onDelete) return;
+    if (!canManage || !onDelete) return;
     onDelete(itemId);
   };
 
@@ -71,7 +75,7 @@ export function TaskChecklistSection({
             <Checkbox
               checked={item.completed}
               onCheckedChange={() => handleToggle(item.id)}
-              disabled={!canEdit}
+              disabled={!canUpdate}
               className="mt-0.5"
             />
             <span
@@ -83,7 +87,8 @@ export function TaskChecklistSection({
             >
               {item.title}
             </span>
-            {canEdit && (
+            {/* Remover item: apenas supervisor (canManage) */}
+            {canManage && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -104,8 +109,8 @@ export function TaskChecklistSection({
         )}
       </div>
 
-      {/* Adicionar novo item */}
-      {canEdit && (
+      {/* Adicionar novo item: apenas supervisor (canManage) */}
+      {canManage && (
         <div className="flex gap-2">
           <Input
             placeholder="Adicionar item..."
@@ -123,6 +128,13 @@ export function TaskChecklistSection({
             <Plus className="h-4 w-4" />
           </Button>
         </div>
+      )}
+
+      {/* Aviso para quem não é supervisor: só marca, não adiciona/remove */}
+      {!canManage && canUpdate && (
+        <p className="text-xs text-muted-foreground">
+          Apenas o supervisor pode adicionar ou remover itens do checklist.
+        </p>
       )}
     </div>
   );
