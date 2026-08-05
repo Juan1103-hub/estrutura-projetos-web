@@ -30,6 +30,7 @@ import { canTransition } from '@/lib/tasks/transitions';
 import { updateTask } from '@/app/actions/tasks';
 import { NotificationBell } from '@/components/notifications/notification-bell';
 import { useNotifications } from '@/hooks/use-notifications';
+import { getBrowserClient } from '@/lib/supabase/realtime';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
 import { getStoredUser } from '@/components/auth/login-form';
 import { visibleTasks, canModifyTask, can, ROLE_LABELS } from '@/lib/auth/roles';
@@ -68,7 +69,14 @@ export function KanbanBoard() {
   const [selectedTask, setSelectedTask] = useState<TaskWithRelations | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
-  const [tasks, setTasks] = useState<TaskWithRelations[]>(mockTasks);
+  // Inicializa com os mocks APENAS em modo demo (sem Supabase). Com Supabase,
+  // começa vazio e mostra um loading até o getBoardTasks retornar — evita o
+  // "pulo" dos cards: antes mostrava os mocks e de repente trocava pelos dados
+  // reais do banco, fazendo os cards se moverem logo após o login.
+  const [tasks, setTasks] = useState<TaskWithRelations[]>(
+    typeof window !== "undefined" && !getBrowserClient() ? mockTasks : []
+  );
+  const [boardLoading, setBoardLoading] = useState(true);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [dragRejected, setDragRejected] = useState(false);
   const [filters, setFilters] = useState<TaskFilters>({});
@@ -140,6 +148,9 @@ export function KanbanBoard() {
       if (boardTasks.length > 0) {
         setTasks(boardTasks);
       }
+      // Loading termina de qualquer forma (mesmo sem tarefas) — sem isso o
+      // board ficaria em "Carregando..." para sempre quando o banco está vazio.
+      setBoardLoading(false);
     });
   }, []);
 
@@ -329,23 +340,48 @@ export function KanbanBoard() {
           "flex-1 min-h-0",
           stack ? "overflow-y-auto" : "overflow-x-auto overflow-y-auto snap-x snap-mandatory scroll-px-6 pb-2"
         )}>
-          <div className={`${stack ? 'flex flex-col gap-6 pb-6' : 'flex gap-6 pb-6'}`}>
-            {columns.map((status) => (
-              <SortableContext
-                key={status}
-                items={getTasksByStatus(status).map((t) => t.id)}
-                strategy={horizontalListSortingStrategy}
-              >
-                <KanbanColumn
+          {boardLoading ? (
+            // Estado de carregamento estável (sem pulo de cards): colunas
+            // vazias com um placeholder até o getBoardTasks retornar. Assim o
+            // usuário não vê os mocks piscarem e depois trocarem pelos dados.
+            <div className={stack ? 'flex flex-col gap-6 pb-6' : 'flex gap-6 pb-6'}>
+              {columns.map((status) => (
+                <div
                   key={status}
-                  status={status}
-                  tasks={getTasksByStatus(status)}
-                  onTaskClick={handleTaskClick}
-                  stack={stack}
-                />
-              </SortableContext>
-            ))}
-          </div>
+                  className={stack
+                    ? "flex flex-col gap-4 w-full max-w-2xl"
+                    : "flex flex-col h-full min-w-[272px] w-[clamp(272px,26vw,336px)] shrink-0 snap-start"
+                  }
+                >
+                  <div className="flex items-center justify-between mb-3 px-2">
+                    <div className="h-4 w-32 rounded bg-muted/60 animate-pulse" />
+                    <div className="h-5 w-6 rounded bg-muted/60 animate-pulse" />
+                  </div>
+                  <div className="flex-1 min-h-0 pr-2">
+                    <div className="h-40 rounded-xl border border-border/70 bg-muted/20 animate-pulse" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className={`${stack ? 'flex flex-col gap-6 pb-6' : 'flex gap-6 pb-6'}`}>
+              {columns.map((status) => (
+                <SortableContext
+                  key={status}
+                  items={getTasksByStatus(status).map((t) => t.id)}
+                  strategy={horizontalListSortingStrategy}
+                >
+                  <KanbanColumn
+                    key={status}
+                    status={status}
+                    tasks={getTasksByStatus(status)}
+                    onTaskClick={handleTaskClick}
+                    stack={stack}
+                  />
+                </SortableContext>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
