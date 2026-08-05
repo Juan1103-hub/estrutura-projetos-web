@@ -108,21 +108,20 @@ export function KanbanBoard() {
   const stack = mounted ? responsiveStack : false;
 
   // Só desloga após confirmação (AC: "deseja sair?"). Evita saída acidental.
-  const handleLogout = async () => {
+  const handleLogout = () => {
     if (typeof window !== 'undefined') {
+      // Limpa o estado local IMEDIATAMENTE para a UI não ficar presa no board.
       window.localStorage.removeItem('kanban_session_user');
-      // Remove o cookie httpOnly (sessão do servidor) — aguarda terminar para
-      // o middleware não redirecionar de volta enquanto navega.
-      await logout();
+      setCurrentUser(null);
+      // Navega para /login na hora, SEM aguardar o logout() do servidor.
+      // O signOut() do Supabase é uma chamada de rede que causava delay
+      // (mostrava o fundo do board). Dispara em paralelo e não bloqueia a
+      // navegação — o cookie é limpo em segundo plano.
+      void logout();
     }
     setLogoutOpen(false);
     setLoggingOut(false);
-    // Navega ANTES de limpar o estado: se setCurrentUser(null) rodasse aqui,
-    // o header cairia no fallback "Maria Santos" por um instante (flash de
-    // outro login). Com a navegação já em andamento, o board não re-renderiza
-    // com o usuário errado.
     router.push('/login');
-    setCurrentUser(null);
   };
 
   const sensors = useSensors(
