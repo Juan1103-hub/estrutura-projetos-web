@@ -40,12 +40,24 @@ const DEDUP_TYPES: NotificationType[] = ["deadline"];
 /**
  * Monta uma notificação nova no topo da fila.
  *
- * Para tipos que deduplicam (ex: deadline), se já existir uma notificação
- * NÃO-LIDA com a mesma chave (tipo+tarefa), reusa a entrada existente
- * (atualiza o timestamp) em vez de criar outra — evita a "chuva" de
- * notificações repetidas a cada ciclo de 60s.
+ * Deduplicação em duas frentes:
+ * - Se `id` é informado (notificação real do banco via Realtime/seed), e já
+ *   existe na fila com o MESMO id, não duplica (a mesma linha do banco pode
+ *   chegar pelo seed inicial E pelo canal Realtime).
+ * - Para tipos que deduplicam (ex: deadline), se já existir uma notificação
+ *   NÃO-LIDA com a mesma chave (tipo+tarefa), reusa a entrada existente
+ *   (atualiza o timestamp) em vez de criar outra — evita a "chuva" de
+ *   notificações repetidas a cada ciclo de 60s.
  */
-export function pushNotification(input: Omit<AppNotification, "id" | "createdAt" | "read">): AppNotification {
+export function pushNotification(
+  input: Omit<AppNotification, "id" | "createdAt" | "read"> & { id?: string }
+): AppNotification {
+  if (input.id) {
+    const existing = queue.find((n) => n.id === input.id);
+    if (existing) {
+      return existing;
+    }
+  }
   if (DEDUP_TYPES.includes(input.type)) {
     const existing = queue.find((n) => n.type === input.type && n.taskId === input.taskId && !n.read);
     if (existing) {
@@ -60,7 +72,7 @@ export function pushNotification(input: Omit<AppNotification, "id" | "createdAt"
   seq += 1;
   const n: AppNotification = {
     ...input,
-    id: `n-${seq}`,
+    id: input.id ?? `n-${seq}`,
     createdAt: new Date().toISOString(),
     read: false,
   };
@@ -103,7 +115,8 @@ export function countUnread(notifications: AppNotification[] = queue): number {
   return notifications.filter((n) => !n.read).length;
 }
 
-/** Evento a partir de um comentário (AC-043). */
+/** Evento a partir de um comentário (AC-043).
+ * Ex: "Maria comentou na sua tarefa" / "Maria comentou em 'Cotação XYZ'". */
 export function commentNotification(input: {
   taskTitle: string;
   author: string;
@@ -111,21 +124,27 @@ export function commentNotification(input: {
 }): AppNotification {
   return pushNotification({
     type: "comment",
-    title: `${input.author} comentou`,
-    body: `${input.author} comentou em ${input.taskTitle}`,
+    title: `${input.author} comentou na sua tarefa`,
+    body: `"${input.taskTitle}"`,
     taskId: input.taskId,
   });
 }
 
-/** Evento a partir de uma nova tarefa atribuída (AC-042). */
+/** Evento a partir de uma nova tarefa atribuída (AC-042).
+ * Ex: "Você recebeu uma nova tarefa" / "Nova tarefa atribuída a João Silva". */
 export function newTaskNotification(input: {
   taskTitle: string;
   taskId: string;
+  /** Nome do responsável (o receptor, quando é você). */
+  assignee?: string;
 }): AppNotification {
+  const assigned = input.assignee?.trim();
   return pushNotification({
     type: "new_task",
-    title: "Nova tarefa",
-    body: `Nova tarefa: ${input.taskTitle}`,
+    title: assigned ? "Nova tarefa atribuída" : "Nova tarefa",
+    body: assigned
+      ? `"${input.taskTitle}" foi atribuída a ${assigned}`
+      : `"${input.taskTitle}" foi criada`,
     taskId: input.taskId,
   });
 }

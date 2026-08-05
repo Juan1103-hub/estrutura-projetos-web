@@ -129,8 +129,8 @@ export async function addComment(input: {
     await notifyTaskStakeholders({
       taskId: input.taskId,
       type: "comment",
-      title: `${actor.name} comentou`,
-      message: `${actor.name} comentou em ${taskTitle ?? "sua tarefa"}`,
+      title: `${actor.name} comentou na sua tarefa`,
+      message: `"${taskTitle ?? "sua tarefa"}"`,
       excludeUserId: actor.id,
     });
 

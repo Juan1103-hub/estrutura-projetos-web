@@ -8,6 +8,7 @@ import {
   commentNotification,
   deadlineNotifications,
   getNotifications,
+  newTaskNotification,
   pushNotification,
 } from "@/lib/notifications/realtime";
 import { subscribeNotifications, getBrowserClient } from "@/lib/supabase/realtime";
@@ -103,10 +104,11 @@ export function useNotifications() {
     const onNewTask = (e: Event) => {
       const detail = (e as CustomEvent).detail ?? {};
       if (detail.taskTitle) {
-        commentNotification({
+        newTaskNotification({
           taskId: detail.taskId,
           taskTitle: detail.taskTitle,
-          author: "Sistema",
+          // Ex: "atribuída a você" / "atribuída a João Silva"
+          assignee: detail.by,
         });
         sync();
       }

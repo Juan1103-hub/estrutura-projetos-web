@@ -167,6 +167,16 @@ export async function createTask(input: CreateTaskInput): Promise<TaskResult> {
       checklistItems = items as unknown as ChecklistItem[];
     }
 
+    // Notifica os envolvidos sobre a nova tarefa (AC-042): o responsável
+    // recebe no sino via Realtime que uma tarefa foi atribuída a ele.
+    await notifyTaskStakeholders({
+      taskId: created.id,
+      type: "new_task",
+      title: "Nova tarefa atribuída",
+      message: `"${created.title}" foi atribuída a você`,
+      excludeUserId: input.requesterId,
+    });
+
     return {
       ok: true,
       task: { ...created, checklist_items: checklistItems },
